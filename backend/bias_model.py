@@ -1,3 +1,20 @@
+import logging
+import os
+import sys
+from transformers import pipeline
+
+logger = logging.getLogger(__name__)
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+print("Loading bias model...")
+bias_classifier = pipeline(
+    "text-classification",
+    model="valurank/distilroberta-bias",
+    truncation=True,
+    max_length=512
+)
+print("Bias model ready!")
 def predict_bias(text):
     """
     Uses trained model as primary signal.
