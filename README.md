@@ -55,7 +55,7 @@ lie-bias-detector/
 
 **1. Clone the repo**
 ```bash
-git clone https://github.com/YOURUSERNAME/lie-bias-detector.git
+git clone https://github.com/YASHWARDHAN1011/lie-bias-detector.git
 cd lie-bias-detector
 ```
 
