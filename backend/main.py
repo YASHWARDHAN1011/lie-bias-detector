@@ -64,3 +64,11 @@ def analyze(input: TextInput):
 @app.get("/history")
 def get_history():
     return load_history()
+
+from backend.evaluator import run_evaluation
+from backend.analyzer import analyze_text as _analyze
+
+@app.get("/evaluate")
+def evaluate():
+    return run_evaluation(_analyze)
+

@@ -1,5 +1,5 @@
 from transformers import pipeline
-from words import (
+from backend.words import (
     fear_words, loaded_words, exaggeration_words, clickbait_words,
     ALL_MANIPULATION_WORDS, left_words, right_words, neutral_words
 )
@@ -124,6 +124,36 @@ def generate_verdict(sentiment, manipulation_level, bias):
 # MAIN FUNCTION
 # ============================================================
 
+def explain_prediction(text, trigger_words, bias_words_found, sentiment):
+    text_lower = text.lower()
+    words = text.split()
+    explained = []
+
+    for word in words:
+        word_clean = word.lower().strip('.,!?";:')
+        if any(tw in word_clean for tw in trigger_words if tw != "None found"):
+            explained.append({"word": word, "type": "manipulation"})
+        elif any(bw in word_clean for bw in bias_words_found if bw != "None found"):
+            explained.append({"word": word, "type": "bias"})
+        else:
+            explained.append({"word": word, "type": "normal"})
+
+    # Build explanation sentences
+    reasons = []
+    if trigger_words and trigger_words != ["None found"]:
+        reasons.append(f"Manipulation detected because of: {', '.join(trigger_words[:5])}")
+    if bias_words_found and bias_words_found != ["None found"]:
+        reasons.append(f"Bias indicators found: {', '.join(bias_words_found[:5])}")
+    if sentiment == "Negative":
+        reasons.append("Sentiment model detected strong negative tone")
+    elif sentiment == "Positive":
+        reasons.append("Sentiment model detected positive tone")
+
+    return {
+        "word_breakdown": explained,
+        "reasons": reasons
+    }
+
 def analyze_text(text):
     if not text or len(text.strip()) == 0:
         return {"error": "Please enter some text to analyze."}
@@ -134,6 +164,13 @@ def analyze_text(text):
     verdict                      = generate_verdict(sentiment, manipulation, bias)
     bias_words_found             = left_found + right_found
 
+    explanation = explain_prediction(
+        text, 
+        trigger_words if trigger_words else [], 
+        bias_words_found if bias_words_found else [],
+        sentiment
+    )
+
     return {
         "sentiment":          sentiment,
         "confidence":         f"{confidence}%",
@@ -141,5 +178,7 @@ def analyze_text(text):
         "bias":               bias,
         "trigger_words":      trigger_words      if trigger_words      else ["None found"],
         "bias_words_found":   bias_words_found   if bias_words_found   else ["None found"],
-        "verdict":            verdict
+        "verdict":            verdict,
+        "word_breakdown":     explanation["word_breakdown"],
+        "reasons":            explanation["reasons"]
     }
