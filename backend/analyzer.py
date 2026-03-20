@@ -21,11 +21,28 @@ print("Model ready!")
 # ============================================================
 
 def analyze_sentiment(text):
+    # Primary model — SST-2 (positive/negative)
     result = sentiment_model(text, truncation=True, max_length=512)[0]
     label = result["label"]
     score = round(result["score"] * 100, 2)
 
-    if score < 65:
+    # Proper 3-class logic based on linguistic signals
+    text_lower = text.lower()
+    
+    # Neutral indicators — factual reporting language
+    neutral_signals = [
+        "according to", "officials say", "reports suggest",
+        "study finds", "data shows", "analysts say",
+        "announced", "confirmed", "stated", "said"
+    ]
+    
+    has_neutral_signal = any(sig in text_lower for sig in neutral_signals)
+    
+    # If text has neutral reporting language AND model isn't very confident
+    if has_neutral_signal and score < 85:
+        sentiment = "Neutral"
+    elif score < 60:
+        # Genuinely uncertain — call it neutral
         sentiment = "Neutral"
     elif label == "POSITIVE":
         sentiment = "Positive"

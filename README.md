@@ -1,24 +1,61 @@
-# LinguaLens — AI Text Bias & Manipulation Detector
+# LinguaLens — AI Text Framing & Manipulation Analyzer
 
-A full-stack AI web application that analyzes any text and detects
-hidden sentiment, political bias, and manipulative language in real time.
+An explainable NLP web application that analyzes text for sentiment,
+political framing, and manipulative language patterns.
 
-![Python](https://img.shields.io/badge/Python-3.10-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green)
-![HuggingFace](https://img.shields.io/badge/HuggingFace-Transformers-orange)
+> ⚠️ **Transparency note**: Sentiment detection uses DistilBERT (transformer-based).
+> Bias and manipulation detection use a hybrid rule-based + keyword scoring approach.
+> This is a research prototype, not a production truth-verification system.
+
+---
+
+## Demo
+
+![LinguaLens Demo](results/screenshots/demo.png)
 
 ---
 
 ## What It Does
 
-Paste any text — news headline, political speech, product review —
-and get an instant breakdown of:
+| Feature | Approach | Model |
+|---|---|---|
+| Sentiment Analysis | Transformer-based | DistilBERT (SST-2) |
+| Manipulation Detection | Keyword scoring + rules | Custom scorer |
+| Political Bias | Keyword framing analysis | Rule-based classifier |
+| Explainability | Word-level breakdown | Token highlighting |
+| Evaluation | Metrics on labeled samples | scikit-learn |
 
-- **Sentiment** — Positive / Negative / Neutral with confidence score
-- **Manipulation Level** — Low / Medium / High with trigger words highlighted
-- **Political Bias** — Left-leaning / Right-leaning / Neutral
-- **AI Verdict** — Plain English explanation of what was detected
-- **Analysis History** — Last 10 analyses saved and displayed
+---
+
+## Architecture
+```
+User Input (text)
+       ↓
+  FastAPI Backend
+       ↓
+  ┌─────────────────────────────┐
+  │ 1. Sentiment (DistilBERT)   │
+  │ 2. Manipulation (keywords)  │
+  │ 3. Bias (keyword framing)   │
+  │ 4. Explainability layer     │
+  └─────────────────────────────┘
+       ↓
+  JSON Response → Animated UI
+```
+
+---
+
+## Performance (30 labeled test samples)
+
+| Task | Accuracy | F1 Score |
+|---|---|---|
+| Sentiment Detection | 86.7% | 80.8% |
+| Manipulation Detection | 86.7% | 86.7% |
+| Bias Detection | 76.7% | 77.6% |
+
+> Note: Evaluated on 30 hand-labeled samples.
+> Bias detection is keyword-based and may misclassify
+> neutral reporting containing political terminology.
 
 ---
 
@@ -26,12 +63,11 @@ and get an instant breakdown of:
 
 | Layer | Technology |
 |---|---|
-| Frontend | HTML, CSS, JavaScript (vanilla) |
 | Backend | FastAPI + Uvicorn |
 | NLP Model | DistilBERT (HuggingFace Transformers) |
-| Bias Detection | Keyword-based scoring |
-| Manipulation Detection | Multi-category keyword scoring |
-| History Storage | JSON file |
+| Evaluation | scikit-learn |
+| Frontend | HTML + CSS + Vanilla JS |
+| Storage | JSON (demo) |
 
 ---
 
@@ -39,87 +75,98 @@ and get an instant breakdown of:
 ```
 lie-bias-detector/
 ├── backend/
-│   ├── analyzer.py     # Core NLP logic — sentiment, bias, manipulation
-│   ├── words.py        # Keyword dictionaries (100+ words)
-│   └── main.py         # FastAPI server + API routes
+│   ├── __init__.py
+│   ├── analyzer.py      # Core NLP logic
+│   ├── words.py         # Keyword dictionaries
+│   ├── evaluator.py     # Evaluation pipeline
+│   └── main.py          # FastAPI server
 ├── frontend/
-│   └── index.html      # Full UI — dark theme, animated results
+│   └── index.html       # Full UI
 ├── results/
-│   └── history.json    # Auto-saved analysis history
-└── requirements.txt
+│   └── history.json     # Analysis history
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## How to Run Locally
-
-**1. Clone the repo**
+## Setup & Run
 ```bash
+# 1. Clone the repo
 git clone https://github.com/YASHWARDHAN1011/lie-bias-detector.git
 cd lie-bias-detector
-```
 
-**2. Create virtual environment**
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-**3. Install dependencies**
-```bash
+# 2. Install dependencies
 pip install -r requirements.txt
-```
 
-**4. Start the server**
-```bash
+# 3. Start the server
 uvicorn backend.main:app --reload
-```
 
-**5. Open in browser**
-```
-http://127.0.0.1:8000
+# 4. Open in browser
+# http://127.0.0.1:8000
 ```
 
 ---
 
-## Example Results
+## API
 
-| Input | Sentiment | Manipulation | Bias |
-|---|---|---|---|
-| Political speech with loaded language | Negative | High | Right-leaning |
-| Neutral news article | Neutral | Low | Neutral |
-| Fake review with exaggerations | Positive | High | Neutral |
-| Clickbait headline | Negative | High | Neutral |
+**POST /analyze**
+```json
+// Request
+{ "text": "Your text here" }
 
----
-
-## Limitations
-
-- Bias detection is keyword-based — a prototype, not a perfect classifier
-- Works best on English text
-- Short texts may have lower confidence scores
-- Fine-tuning on a labeled political dataset would improve bias accuracy
-
----
-
-## Future Improvements
-
-- Fine-tune RoBERTa on LIAR dataset for better bias detection
-- Add multilingual support
-- Add attention visualization to highlight suspicious sentences
-- Deploy on Hugging Face Spaces
+// Response
+{
+  "sentiment": "Negative",
+  "confidence": "99.2%",
+  "manipulation_level": "High",
+  "bias": "Right-leaning",
+  "trigger_words": ["radical", "corrupt"],
+  "bias_words_found": ["patriot"],
+  "verdict": "This text has a strongly negative tone...",
+  "word_breakdown": [...],
+  "reasons": [...]
+}
 ```
 
-Save it.
+**GET /health**
+```json
+{ "status": "ok", "version": "1.0.0" }
+```
+
+**GET /history**
+Returns last 10 analyses.
+
+**GET /evaluate**
+Runs evaluation on 30 labeled test samples.
 
 ---
 
-**Step 3 — Update requirements.txt**
+## Known Limitations
 
-Open `requirements.txt` and paste:
-```
-fastapi
-uvicorn
-transformers
-torch
-pandas
+- Bias detection uses keyword matching — can misclassify neutral
+  reporting that quotes political language
+- Sarcasm and irony are not detected
+- Optimized for English text only
+- 30-sample evaluation is not a full benchmark —
+  real-world accuracy may differ
+- Neutral sentiment is estimated, not from a dedicated 3-class model
+
+---
+
+## Future Roadmap
+
+- [ ] Fine-tune RoBERTa on LIAR dataset for manipulation detection
+- [ ] Replace keyword bias with a trained political framing classifier
+- [ ] Evaluate on public datasets (SST-2, LIAR, AllSides)
+- [ ] Add multilingual support
+- [ ] Docker deployment
+- [ ] Sentence-level analysis for longer articles
+
+---
+
+## Ethics Note
+
+This tool is designed for media literacy and educational purposes.
+It should not be used as a definitive truth detector. All predictions
+are probabilistic and should be interpreted with critical thinking.
