@@ -1,3 +1,10 @@
+try:
+    from bias_model import predict_bias
+    BIAS_MODEL_AVAILABLE = True
+    print("Trained bias model loaded!")
+except Exception as e:
+    BIAS_MODEL_AVAILABLE = False
+    print(f"Bias model not available, using keywords: {e}")
 from transformers import pipeline
 from backend.words import (
     fear_words, loaded_words, exaggeration_words, clickbait_words,
@@ -84,22 +91,34 @@ def analyze_manipulation(text):
 
 def analyze_bias(text):
     text_lower = text.lower()
+    found_left  = [w for w in left_words  if w in text_lower]
+    found_right = [w for w in right_words if w in text_lower]
 
-    found_left    = [w for w in left_words    if w in text_lower]
-    found_right   = [w for w in right_words   if w in text_lower]
-    found_neutral = [w for w in neutral_words if w in text_lower]
-
-    left_score  = len(found_left)
-    right_score = len(found_right)
-
-    if left_score == 0 and right_score == 0:
-        bias = "Neutral / Unclear"
-    elif left_score > right_score:
-        bias = "Left-leaning"
-    elif right_score > left_score:
-        bias = "Right-leaning"
+    if BIAS_MODEL_AVAILABLE:
+        try:
+            model_bias, confidence = predict_bias(text)
+            keyword_left  = len(found_left)
+            keyword_right = len(found_right)
+            if model_bias == "Neutral / Unclear" and keyword_left > keyword_right:
+                bias = "Left-leaning"
+            elif model_bias == "Neutral / Unclear" and keyword_right > keyword_left:
+                bias = "Right-leaning"
+            else:
+                bias = model_bias
+        except Exception as e:
+            print(f"Bias prediction error: {e}")
+            bias = "Neutral / Unclear"
     else:
-        bias = "Mixed / Unclear"
+        left_score  = len(found_left)
+        right_score = len(found_right)
+        if left_score == 0 and right_score == 0:
+            bias = "Neutral / Unclear"
+        elif left_score > right_score:
+            bias = "Left-leaning"
+        elif right_score > left_score:
+            bias = "Right-leaning"
+        else:
+            bias = "Mixed / Unclear"
 
     return bias, found_left, found_right
 
