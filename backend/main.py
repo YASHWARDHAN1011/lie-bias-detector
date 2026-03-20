@@ -1,3 +1,9 @@
+try:
+    from backend.real_evaluator import run_real_evaluation
+    REAL_EVAL_AVAILABLE = True
+except ImportError as e:
+    print(f"Real evaluator not available: {e}")
+    REAL_EVAL_AVAILABLE = False
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -101,4 +107,15 @@ def evaluate():
         return run_evaluation(analyze_text)
     except Exception as e:
         logger.error(f"Evaluation failed: {e}")
+        return {"error": str(e)}
+
+@app.get("/evaluate-real")
+def evaluate_real():
+    if not REAL_EVAL_AVAILABLE:
+        return {"error": "Real evaluator not available. Check imports."}
+    try:
+        logger.info("Starting real dataset evaluation...")
+        return run_real_evaluation(analyze_text, max_samples=200)
+    except Exception as e:
+        logger.error(f"Real evaluation failed: {e}")
         return {"error": str(e)}

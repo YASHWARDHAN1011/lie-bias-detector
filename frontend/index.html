@@ -16,26 +16,18 @@
     }
     body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
     #particles { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-
-    /* NAV */
     nav { position:sticky; top:0; background:rgba(10,10,15,0.85); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); padding:0 2rem; height:64px; display:flex; align-items:center; justify-content:space-between; z-index:100; }
     .nav-logo { display:flex; align-items:center; gap:10px; font-size:1.2rem; font-weight:700; background:linear-gradient(135deg,var(--blue),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
     .nav-icon { width:32px; height:32px; background:linear-gradient(135deg,var(--blue),var(--purple)); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
-
-    /* TABS */
     .tabs { display:flex; gap:0.5rem; }
     .tab { padding:6px 16px; border-radius:8px; font-size:0.85rem; font-weight:500; cursor:pointer; border:1px solid var(--border); color:var(--text2); background:transparent; transition:all 0.2s; }
     .tab.active { background:var(--glow); border-color:var(--blue); color:var(--blue); }
     .tab:hover { border-color:var(--border2); color:var(--text); }
-
     .container { max-width:1200px; margin:0 auto; padding:2rem; position:relative; z-index:1; }
     .page { display:none; }
     .page.active { display:block; }
-
-    /* HERO */
     .hero { text-align:center; padding:3rem 0 2rem; }
     .hero h1 { font-size:2.8rem; font-weight:700; line-height:1.2; margin-bottom:1rem; min-height:70px; color:#ffffff; }
-    .hero h1 span { background:linear-gradient(135deg,var(--blue),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
     #typed, #typed span { color:#ffffff !important; -webkit-text-fill-color:#ffffff !important; background:none !important; }
     .cursor { display:inline-block; width:3px; height:2.8rem; background:var(--blue); margin-left:4px; vertical-align:middle; animation:blink 1s infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
@@ -44,11 +36,7 @@
     .hero-stat { text-align:center; }
     .hero-stat-value { font-size:1.4rem; font-weight:700; color:#ffffff; }
     .hero-stat-label { font-size:0.75rem; color:var(--text3); text-transform:uppercase; letter-spacing:0.05em; }
-
-    /* MAIN GRID */
     .main-grid { display:grid; grid-template-columns:1fr 380px; gap:1.5rem; align-items:start; }
-
-    /* INPUT CARD */
     .input-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; transition:border-color 0.3s,box-shadow 0.3s; }
     .input-card:focus-within { border-color:var(--blue); box-shadow:0 0 0 3px var(--glow); }
     .input-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
@@ -57,16 +45,16 @@
     .counter span { color:var(--blue); font-weight:600; }
     .editor-wrap { position:relative; margin-bottom:1rem; }
     #highlight-display { position:absolute; top:0; left:0; width:100%; min-height:180px; background:transparent; border:1px solid transparent; border-radius:10px; padding:1rem; font-family:'Inter',sans-serif; font-size:0.95rem; line-height:1.7; color:transparent; pointer-events:none; white-space:pre-wrap; word-wrap:break-word; z-index:1; }
-    textarea { position:relative; width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:10px; color:var(--text); font-family:'Inter',sans-serif; font-size:0.95rem; line-height:1.7; padding:1rem; resize:vertical; min-height:180px; outline:none; transition:border-color 0.2s; z-index:2; background:transparent; caret-color:var(--blue); }
+    textarea { position:relative; width:100%; background:transparent; border:1px solid var(--border); border-radius:10px; color:var(--text); font-family:'Inter',sans-serif; font-size:0.95rem; line-height:1.7; padding:1rem; resize:vertical; min-height:180px; outline:none; transition:border-color 0.2s; z-index:2; caret-color:var(--blue); }
     textarea::placeholder { color:var(--text3); }
     textarea:focus { border-color:var(--blue); }
     .highlight-manip { background:rgba(255,94,125,0.25); border-radius:3px; color:var(--text); }
-    .highlight-bias  { background:rgba(79,142,247,0.25); border-radius:3px; color:var(--text); }
+    .highlight-bias { background:rgba(79,142,247,0.25); border-radius:3px; color:var(--text); }
     .highlight-legend { display:flex; gap:1rem; margin-bottom:0.8rem; }
     .legend-item { display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--text3); }
     .legend-dot { width:10px; height:10px; border-radius:2px; }
     .legend-dot.manip { background:rgba(255,94,125,0.5); }
-    .legend-dot.bias  { background:rgba(79,142,247,0.5); }
+    .legend-dot.bias { background:rgba(79,142,247,0.5); }
     .samples-label { font-size:0.75rem; color:var(--text3); margin:0.8rem 0 0.4rem; }
     .sample-pills { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem; }
     .pill { font-size:0.75rem; background:var(--bg2); border:1px solid var(--border); color:var(--text2); padding:4px 12px; border-radius:20px; cursor:pointer; transition:all 0.2s; }
@@ -82,8 +70,6 @@
     .btn-text { display:flex; align-items:center; justify-content:center; gap:8px; }
     .spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; display:none; }
     @keyframes spin { to { transform:rotate(360deg); } }
-
-    /* HISTORY */
     .history-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.25rem; position:sticky; top:80px; }
     .history-title { font-size:0.85rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:1rem; display:flex; align-items:center; gap:8px; }
     .count-badge { background:var(--glow); border:1px solid var(--blue); color:var(--blue); font-size:0.7rem; padding:1px 7px; border-radius:10px; }
@@ -95,20 +81,18 @@
     .mini-badge { font-size:0.68rem; padding:2px 7px; border-radius:6px; font-weight:500; }
     .mini-badge.positive { background:rgba(61,214,140,0.15); color:var(--green); }
     .mini-badge.negative { background:rgba(255,94,125,0.15); color:var(--red); }
-    .mini-badge.neutral  { background:rgba(155,109,255,0.15); color:var(--neutral); }
-    .mini-badge.high     { background:rgba(255,94,125,0.15); color:var(--red); }
-    .mini-badge.medium   { background:rgba(255,169,61,0.15); color:var(--orange); }
-    .mini-badge.low      { background:rgba(61,214,140,0.15); color:var(--green); }
+    .mini-badge.neutral { background:rgba(155,109,255,0.15); color:var(--neutral); }
+    .mini-badge.high { background:rgba(255,94,125,0.15); color:var(--red); }
+    .mini-badge.medium { background:rgba(255,169,61,0.15); color:var(--orange); }
+    .mini-badge.low { background:rgba(61,214,140,0.15); color:var(--green); }
     .history-time { font-size:0.7rem; color:var(--text3); margin-top:0.3rem; }
-
-    /* RESULTS */
     .results-section { margin-top:1.5rem; }
     .risk-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.5rem; display:flex; align-items:center; gap:2rem; margin-bottom:1rem; opacity:0; transform:translateY(20px); transition:opacity 0.4s,transform 0.4s; }
     .risk-card.visible { opacity:1; transform:translateY(0); }
     .risk-gauge-wrap { position:relative; width:100px; height:100px; flex-shrink:0; }
     .risk-gauge-wrap svg { transform:rotate(-90deg); }
     .risk-track { fill:none; stroke:var(--border); stroke-width:8; }
-    .risk-fill  { fill:none; stroke-width:8; stroke-linecap:round; stroke-dasharray:251; stroke-dashoffset:251; transition:stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1),stroke 0.5s; }
+    .risk-fill { fill:none; stroke-width:8; stroke-linecap:round; stroke-dasharray:251; stroke-dashoffset:251; transition:stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1),stroke 0.5s; }
     .risk-label { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
     .risk-number { font-size:1.6rem; font-weight:700; line-height:1; }
     .risk-of-10 { font-size:0.7rem; color:var(--text3); }
@@ -120,13 +104,13 @@
     .result-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.25rem; opacity:0; transform:translateY(20px); transition:opacity 0.4s,transform 0.4s,border-color 0.3s,box-shadow 0.3s; }
     .result-card.visible { opacity:1; transform:translateY(0); }
     .result-card.pulse-green { animation:pulseGreen 1.5s ease; }
-    .result-card.pulse-red   { animation:pulseRed 1.5s ease; }
-    .result-card.pulse-orange{ animation:pulseOrange 1.5s ease; }
-    .result-card.pulse-blue  { animation:pulseBlue 1.5s ease; }
-    @keyframes pulseGreen  { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(61,214,140,0.4)} }
-    @keyframes pulseRed    { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(255,94,125,0.4)} }
+    .result-card.pulse-red { animation:pulseRed 1.5s ease; }
+    .result-card.pulse-orange { animation:pulseOrange 1.5s ease; }
+    .result-card.pulse-blue { animation:pulseBlue 1.5s ease; }
+    @keyframes pulseGreen { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(61,214,140,0.4)} }
+    @keyframes pulseRed { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(255,94,125,0.4)} }
     @keyframes pulseOrange { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(255,169,61,0.4)} }
-    @keyframes pulseBlue   { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(79,142,247,0.4)} }
+    @keyframes pulseBlue { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(79,142,247,0.4)} }
     .result-card-label { font-size:0.72rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.6rem; }
     .result-card-value { font-size:1.5rem; font-weight:700; margin-bottom:0.3rem; }
     .result-card-sub { font-size:0.8rem; color:var(--text3); }
@@ -138,39 +122,31 @@
     .words-card-title { font-size:0.72rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.8rem; }
     .word-tags { display:flex; flex-wrap:wrap; gap:0.4rem; }
     .word-tag { font-size:0.8rem; padding:4px 10px; border-radius:6px; font-weight:500; }
-    .word-tag.trigger   { background:rgba(255,94,125,0.12); border:1px solid rgba(255,94,125,0.3); color:var(--red); }
+    .word-tag.trigger { background:rgba(255,94,125,0.12); border:1px solid rgba(255,94,125,0.3); color:var(--red); }
     .word-tag.bias-word { background:rgba(79,142,247,0.12); border:1px solid rgba(79,142,247,0.3); color:var(--blue); }
-    .word-tag.none      { background:var(--bg2); border:1px solid var(--border); color:var(--text3); }
-
-    /* EXPLAINABILITY */
+    .word-tag.none { background:var(--bg2); border:1px solid var(--border); color:var(--text3); }
     .explain-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.25rem; margin-bottom:1rem; opacity:0; transform:translateY(20px); transition:opacity 0.4s,transform 0.4s; }
     .explain-card.visible { opacity:1; transform:translateY(0); }
     .explain-text { font-size:0.95rem; line-height:2; }
     .explain-text .w-manip { background:rgba(255,94,125,0.2); border-bottom:2px solid var(--red); border-radius:3px; padding:1px 3px; color:var(--text); }
-    .explain-text .w-bias  { background:rgba(79,142,247,0.2); border-bottom:2px solid var(--blue); border-radius:3px; padding:1px 3px; color:var(--text); }
+    .explain-text .w-bias { background:rgba(79,142,247,0.2); border-bottom:2px solid var(--blue); border-radius:3px; padding:1px 3px; color:var(--text); }
     .explain-text .w-normal { color:var(--text2); }
     .reasons-list { margin-top:1rem; display:flex; flex-direction:column; gap:0.4rem; }
     .reason-item { display:flex; align-items:flex-start; gap:8px; font-size:0.82rem; color:var(--text2); }
     .reason-dot { width:6px; height:6px; border-radius:50%; background:var(--blue); margin-top:6px; flex-shrink:0; }
-
-    /* VERDICT */
     .verdict-card { background:linear-gradient(135deg,rgba(79,142,247,0.08),rgba(155,109,255,0.08)); border:1px solid var(--border2); border-radius:14px; padding:1.5rem; margin-bottom:1rem; opacity:0; transform:translateY(20px); transition:opacity 0.4s,transform 0.4s; }
     .verdict-card.visible { opacity:1; transform:translateY(0); }
     .verdict-label { font-size:0.72rem; font-weight:600; color:var(--blue); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.6rem; }
     .verdict-text { font-size:1rem; line-height:1.7; }
-
-    /* ── EVAL PAGE ── */
     .eval-page { padding-top:1rem; }
     .eval-header { margin-bottom:2rem; }
     .eval-header h2 { font-size:1.6rem; font-weight:700; color:#ffffff; margin-bottom:0.5rem; }
     .eval-header p { color:var(--text2); font-size:0.9rem; }
-    .eval-btn { padding:10px 24px; background:linear-gradient(135deg,var(--blue),var(--purple)); border:none; border-radius:10px; color:#fff; font-family:'Inter',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; transition:opacity 0.2s; margin-top:1rem; }
+    .eval-btn { padding:10px 24px; background:linear-gradient(135deg,var(--blue),var(--purple)); border:none; border-radius:10px; color:#fff; font-family:'Inter',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; transition:opacity 0.2s; }
     .eval-btn:hover { opacity:0.9; }
     .eval-btn:disabled { opacity:0.5; cursor:not-allowed; }
-    .eval-loading { display:none; color:var(--text2); font-size:0.9rem; margin-top:1rem; }
+    .eval-loading { color:var(--text2); font-size:0.9rem; margin-top:1rem; display:none; }
     .eval-results { display:none; }
-
-    /* METRIC CARDS */
     .metric-section-title { font-size:0.85rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.1em; margin:2rem 0 1rem; }
     .metrics-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem; }
     .metric-group { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.25rem; }
@@ -180,8 +156,6 @@
     .metric-val { font-size:0.9rem; font-weight:600; color:#ffffff; }
     .metric-bar-wrap { height:4px; background:var(--border); border-radius:2px; margin-top:3px; overflow:hidden; }
     .metric-bar { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--blue),var(--purple)); transition:width 1s ease; }
-
-    /* CONFUSION MATRIX */
     .cm-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem; }
     .cm-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.25rem; }
     .cm-title { font-size:0.75rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1rem; }
@@ -189,9 +163,7 @@
     .cm-table th { color:var(--text3); font-weight:500; padding:4px 8px; text-align:center; }
     .cm-table td { padding:6px 8px; text-align:center; border-radius:4px; font-weight:600; }
     .cm-diag { background:rgba(79,142,247,0.2); color:var(--blue); }
-    .cm-off  { background:rgba(255,94,125,0.1); color:var(--text2); }
-
-    /* MODEL COMPARISON */
+    .cm-off { background:rgba(255,94,125,0.1); color:var(--text2); }
     .comparison-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.5rem; margin-bottom:2rem; }
     .comparison-title { font-size:0.85rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1.5rem; }
     .comparison-row { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:1rem; padding:0.8rem 0; border-bottom:1px solid var(--border); align-items:center; }
@@ -202,14 +174,11 @@
     .comp-val { font-size:0.85rem; font-weight:600; text-align:center; }
     .comp-bar-wrap { height:4px; background:var(--border); border-radius:2px; margin-top:4px; overflow:hidden; }
     .comp-bar { height:100%; border-radius:2px; transition:width 1s ease; }
-
-    /* WORD CLOUD */
     .wordcloud-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.5rem; margin-bottom:2rem; }
     .wordcloud-title { font-size:0.85rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1.5rem; }
     .wordcloud-wrap { display:flex; flex-wrap:wrap; gap:0.6rem; justify-content:center; padding:1rem; min-height:120px; align-items:center; }
     .cloud-word { cursor:default; font-weight:600; transition:transform 0.2s; border-radius:4px; padding:2px 6px; }
     .cloud-word:hover { transform:scale(1.1); }
-
     @media (max-width:900px) {
       .main-grid { grid-template-columns:1fr; }
       .history-card { position:static; }
@@ -224,7 +193,6 @@
 </head>
 <body>
 <canvas id="particles"></canvas>
-
 <nav>
   <div class="nav-logo">
     <div class="nav-icon">🔍</div>
@@ -235,10 +203,9 @@
     <button class="tab" onclick="switchTab('eval')">Evaluation</button>
   </div>
 </nav>
-
 <div class="container">
 
-  <!-- ── ANALYZE PAGE ── -->
+  <!-- ANALYZE PAGE -->
   <div class="page active" id="page-analyze">
     <div class="hero">
       <h1><span id="typed"></span><span class="cursor"></span></h1>
@@ -249,7 +216,6 @@
         <div class="hero-stat"><div class="hero-stat-value">AI</div><div class="hero-stat-label">Powered Model</div></div>
       </div>
     </div>
-
     <div class="main-grid">
       <div>
         <div class="input-card">
@@ -287,7 +253,6 @@
             </div>
           </button>
         </div>
-
         <div class="results-section" id="resultsSection" style="display:none">
           <div class="risk-card" id="riskCard">
             <div class="risk-gauge-wrap">
@@ -306,7 +271,6 @@
               <div class="risk-desc" id="riskDesc">—</div>
             </div>
           </div>
-
           <div class="results-grid">
             <div class="result-card" id="cardSentiment">
               <div class="result-card-label">Sentiment</div>
@@ -326,14 +290,11 @@
               <div class="result-card-sub">Based on keyword analysis</div>
             </div>
           </div>
-
-          <!-- EXPLAINABILITY -->
           <div class="explain-card" id="cardExplain">
             <div class="words-card-title">🔬 Why This Prediction — Word Breakdown</div>
             <div class="explain-text" id="explainText"></div>
             <div class="reasons-list" id="reasonsList"></div>
           </div>
-
           <div class="words-card" id="cardTrigger">
             <div class="words-card-title">⚠️ Manipulation Trigger Words</div>
             <div class="word-tags" id="triggerWords"></div>
@@ -348,7 +309,6 @@
           </div>
         </div>
       </div>
-
       <div>
         <div class="history-card">
           <div class="history-title">Recent Analyses <span class="count-badge" id="historyCount">0</span></div>
@@ -358,47 +318,32 @@
     </div>
   </div>
 
-  <!-- ── EVAL PAGE ── -->
+  <!-- EVAL PAGE -->
   <div class="page" id="page-eval">
     <div class="eval-page">
       <div class="eval-header">
         <h2>Model Evaluation & Metrics</h2>
-        <p>Run a full evaluation on 30 labeled test samples to see accuracy, F1 score, confusion matrix and model comparison.</p>
-        <button class="eval-btn" id="evalBtn" onclick="runEval()">Run Evaluation</button>
-        <div class="eval-loading" id="evalLoading">⏳ Running evaluation on 30 samples... this may take 30–60 seconds.</div>
+        <p>Run evaluations to see accuracy, F1 score, confusion matrix and model comparison.</p>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem">
+          <button class="eval-btn" id="evalBtn" onclick="runEval()">Run Internal Eval (30 samples)</button>
+          <button class="eval-btn" id="realEvalBtn" onclick="runRealEval()" style="background:linear-gradient(135deg,#3dd68c,#4f8ef7)">Run Real Dataset Eval (SST-2 + LIAR)</button>
+        </div>
+        <div class="eval-loading" id="evalLoading">⏳ Running evaluation on 30 samples...</div>
+        <div class="eval-loading" id="realEvalLoading">⏳ Running on 200 real samples each... this takes 2-3 minutes. Don't close the page.</div>
       </div>
-
       <div class="eval-results" id="evalResults">
-
         <div class="metric-section-title">Performance Metrics</div>
         <div class="metrics-grid">
-          <div class="metric-group" id="mgSentiment">
-            <div class="metric-group-title">Sentiment Detection</div>
-          </div>
-          <div class="metric-group" id="mgManipulation">
-            <div class="metric-group-title">Manipulation Detection</div>
-          </div>
-          <div class="metric-group" id="mgBias">
-            <div class="metric-group-title">Bias Detection</div>
-          </div>
+          <div class="metric-group" id="mgSentiment"><div class="metric-group-title">Sentiment Detection</div></div>
+          <div class="metric-group" id="mgManipulation"><div class="metric-group-title">Manipulation Detection</div></div>
+          <div class="metric-group" id="mgBias"><div class="metric-group-title">Bias Detection</div></div>
         </div>
-
         <div class="metric-section-title">Confusion Matrices</div>
         <div class="cm-grid">
-          <div class="cm-card">
-            <div class="cm-title">Sentiment</div>
-            <div id="cmSentiment"></div>
-          </div>
-          <div class="cm-card">
-            <div class="cm-title">Manipulation</div>
-            <div id="cmManipulation"></div>
-          </div>
-          <div class="cm-card">
-            <div class="cm-title">Bias</div>
-            <div id="cmBias"></div>
-          </div>
+          <div class="cm-card"><div class="cm-title">Sentiment</div><div id="cmSentiment"></div></div>
+          <div class="cm-card"><div class="cm-title">Manipulation</div><div id="cmManipulation"></div></div>
+          <div class="cm-card"><div class="cm-title">Bias</div><div id="cmBias"></div></div>
         </div>
-
         <div class="metric-section-title">Model Comparison</div>
         <div class="comparison-card">
           <div class="comparison-title">DistilBERT vs Baseline Models</div>
@@ -411,13 +356,11 @@
           </div>
           <div id="comparisonRows"></div>
         </div>
-
         <div class="metric-section-title">Word Cloud — Most Common Trigger Words</div>
         <div class="wordcloud-card">
           <div class="wordcloud-title">Frequency of manipulation and bias words across test samples</div>
           <div class="wordcloud-wrap" id="wordcloudWrap"></div>
         </div>
-
       </div>
     </div>
   </div>
@@ -427,7 +370,7 @@
 <script>
 const API = 'http://127.0.0.1:8000';
 
-// ── PARTICLES ─────────────────────────────────────────────────
+// PARTICLES
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
 let W, H, dots = [];
@@ -462,7 +405,7 @@ function drawParticles() {
 window.addEventListener('resize', initParticles);
 initParticles(); drawParticles();
 
-// ── TYPING ────────────────────────────────────────────────────
+// TYPING
 const phrases = ['Read Between the Lines','Detect Hidden Bias','Expose Manipulation','Analyze Any Text'];
 let pi=0, ci=0, deleting=false;
 function typeEffect() {
@@ -474,16 +417,16 @@ function typeEffect() {
 }
 typeEffect();
 
-// ── TABS ──────────────────────────────────────────────────────
+// TABS
 function switchTab(name) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['analyze','eval'][i]===name));
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
 }
 
-// ── HIGHLIGHT ─────────────────────────────────────────────────
+// HIGHLIGHT
 const MANIP_WORDS = ["destroy","danger","threat","crisis","attack","collapse","catastrophe","disaster","chaos","panic","terror","violence","war","invasion","deadly","radical","corrupt","evil","shameful","disgusting","pathetic","outrageous","criminal","traitor","liar","fraud","extremist","fanatic","puppet","regime","propaganda","manipulate","always","never","everyone","nobody","nothing","everything","worst","best","greatest","totally","absolutely","completely","shocking","incredible","unprecedented","massive","unbelievable","insane","secret","exposed","revealed","breaking","urgent","miracle","cure","banned","censored","hidden","leaked"];
-const BIAS_WORDS  = ["equality","diversity","inclusion","welfare","progressive","feminism","gun control","working class","unions","systemic","privilege","marginalized","oppression","activist","reform","freedom","patriot","traditional","border security","second amendment","tax cuts","free market","small government","law and order","national security","america first","constitution","military","pro-life","capitalism","deep state","mainstream media","cancel culture","woke","globalist"];
+const BIAS_WORDS = ["equality","diversity","inclusion","welfare","progressive","feminism","gun control","working class","unions","systemic","privilege","marginalized","oppression","activist","reform","freedom","patriot","traditional","border security","second amendment","tax cuts","free market","small government","law and order","national security","america first","constitution","military","pro-life","capitalism","deep state","mainstream media","cancel culture","woke","globalist"];
 
 function escHtml(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function updateHighlight(text) {
@@ -501,11 +444,10 @@ function onInput() {
   document.getElementById('wordCount').textContent = words;
   document.getElementById('charCount').textContent = text.length;
   updateHighlight(text);
-  const ta = document.getElementById('textInput');
-  document.getElementById('highlight-display').scrollTop = ta.scrollTop;
+  document.getElementById('highlight-display').scrollTop = document.getElementById('textInput').scrollTop;
 }
 
-// ── SAMPLES ───────────────────────────────────────────────────
+// SAMPLES
 const SAMPLES = [
   "The radical left has catastrophically destroyed our once-great economy and they will stop at nothing to silence anyone who dares to speak the truth about their corrupt regime.",
   "Breaking: Shocking truth exposed — government secretly banning this miracle cure that doctors don't want you to know about. Share before it gets censored!",
@@ -514,7 +456,7 @@ const SAMPLES = [
 ];
 function loadSample(i){ document.getElementById('textInput').value=SAMPLES[i]; onInput(); }
 
-// ── COUNTER ANIM ──────────────────────────────────────────────
+// COUNTER
 function animateCounter(el, start, end, duration) {
   const t0 = performance.now();
   function upd(now) {
@@ -526,7 +468,7 @@ function animateCounter(el, start, end, duration) {
   requestAnimationFrame(upd);
 }
 
-// ── RISK ──────────────────────────────────────────────────────
+// RISK
 function calcRisk(s,m,b){ let sc=0; if(s==='Negative')sc+=2; else if(s==='Neutral')sc+=1; if(m==='High')sc+=5; else if(m==='Medium')sc+=3; else sc+=1; if(b!=='Neutral / Unclear')sc+=2; return Math.min(sc,10); }
 function riskMeta(sc){ if(sc>=8)return{label:'High Risk',color:'#ff5e7d',desc:'Strong signs of manipulation and bias.'}; if(sc>=5)return{label:'Medium Risk',color:'#ffa93d',desc:'Some concerning language patterns detected.'}; return{label:'Low Risk',color:'#3dd68c',desc:'Text appears relatively balanced and neutral.'}; }
 function sentimentColor(s){ return s==='Positive'?'var(--green)':s==='Negative'?'var(--red)':'var(--neutral)'; }
@@ -536,7 +478,7 @@ function manipSub(m){ return m==='High'?'Strong emotional manipulation':m==='Med
 function biasColor(b){ return b.includes('Left')?'var(--blue)':b.includes('Right')?'var(--red)':'var(--neutral)'; }
 function pulseClass(color){ if(color.includes('green'))return'pulse-green'; if(color.includes('red'))return'pulse-red'; if(color.includes('orange'))return'pulse-orange'; return'pulse-blue'; }
 
-// ── PROGRESS ──────────────────────────────────────────────────
+// PROGRESS
 async function runProgress() {
   const steps=['Analyzing sentiment...','Detecting manipulation...','Checking political bias...'];
   document.getElementById('progressWrap').style.display='block';
@@ -547,16 +489,15 @@ async function runProgress() {
   }
 }
 
-// ── REVEAL ────────────────────────────────────────────────────
+// REVEAL
 function revealCards(data) {
   document.getElementById('resultsSection').style.display='block';
   const conf = parseFloat(data.confidence);
   const score = calcRisk(data.sentiment, data.manipulation_level, data.bias);
-  const meta  = riskMeta(score);
+  const meta = riskMeta(score);
 
   setTimeout(() => {
-    const card = document.getElementById('riskCard');
-    card.classList.add('visible');
+    document.getElementById('riskCard').classList.add('visible');
     animateCounter(document.getElementById('riskNumber'), 0, score, 1000);
     const circle = document.getElementById('riskCircle');
     circle.style.stroke = meta.color;
@@ -599,21 +540,17 @@ function revealCards(data) {
     setTimeout(()=>card.classList.add(pulseClass(color)),100);
   }, 800);
 
-  // Explainability
   setTimeout(() => {
-    const card = document.getElementById('cardExplain');
     const breakdown = data.word_breakdown || [];
-    const html = breakdown.map(w => {
+    document.getElementById('explainText').innerHTML = breakdown.map(w => {
       if(w.type==='manipulation') return `<span class="w-manip">${w.word}</span>`;
       if(w.type==='bias') return `<span class="w-bias">${w.word}</span>`;
       return `<span class="w-normal">${w.word}</span>`;
     }).join(' ');
-    document.getElementById('explainText').innerHTML = html;
-    const reasons = data.reasons || [];
-    document.getElementById('reasonsList').innerHTML = reasons.map(r =>
+    document.getElementById('reasonsList').innerHTML = (data.reasons||[]).map(r =>
       `<div class="reason-item"><div class="reason-dot"></div><span>${r}</span></div>`
     ).join('');
-    card.classList.add('visible');
+    document.getElementById('cardExplain').classList.add('visible');
   }, 1000);
 
   setTimeout(() => {
@@ -646,7 +583,7 @@ function revealCards(data) {
   }, 1600);
 }
 
-// ── ANALYZE ───────────────────────────────────────────────────
+// ANALYZE
 async function analyze() {
   const text = document.getElementById('textInput').value.trim();
   if(!text) return;
@@ -671,7 +608,7 @@ async function analyze() {
   document.getElementById('progressWrap').style.display='none';
 }
 
-// ── HISTORY ───────────────────────────────────────────────────
+// HISTORY
 async function loadHistory() {
   try {
     const res = await fetch(`${API}/history`);
@@ -691,37 +628,30 @@ async function loadHistory() {
   } catch(e){}
 }
 
-// ── EVAL ──────────────────────────────────────────────────────
+// EVAL HELPERS
 function renderMetricGroup(containerId, data) {
-  const metrics = [
-    {name:'Accuracy', val:data.accuracy},
-    {name:'Precision', val:data.precision},
-    {name:'Recall', val:data.recall},
-    {name:'F1 Score', val:data.f1}
-  ];
   const container = document.getElementById(containerId);
-  const existing = container.querySelector('.metric-group-title').outerHTML;
-  container.innerHTML = existing + metrics.map(m=>`
+  const title = container.querySelector('.metric-group-title').outerHTML;
+  container.innerHTML = title + ['accuracy','precision','recall','f1'].map(m=>`
     <div class="metric-row">
       <div>
-        <div class="metric-name">${m.name}</div>
-        <div class="metric-bar-wrap"><div class="metric-bar" style="width:0%" data-val="${m.val}"></div></div>
+        <div class="metric-name">${m.charAt(0).toUpperCase()+m.slice(1)}</div>
+        <div class="metric-bar-wrap"><div class="metric-bar" style="width:0%" data-val="${data[m]}"></div></div>
       </div>
-      <div class="metric-val">${m.val}%</div>
+      <div class="metric-val">${data[m]}%</div>
     </div>`).join('');
   setTimeout(()=>container.querySelectorAll('.metric-bar').forEach(b=>b.style.width=b.dataset.val+'%'),100);
 }
 
 function renderCM(containerId, cm, labels) {
-  const shortLabels = labels.map(l=>l.split(' ')[0].slice(0,4));
-  let html = `<table class="cm-table"><tr><th></th>${shortLabels.map(l=>`<th>${l}</th>`).join('')}</tr>`;
+  const short = labels.map(l=>l.split(' ')[0].slice(0,4));
+  let html = `<table class="cm-table"><tr><th></th>${short.map(l=>`<th>${l}</th>`).join('')}</tr>`;
   cm.forEach((row,i)=>{
-    html += `<tr><th>${shortLabels[i]}</th>`;
+    html += `<tr><th>${short[i]}</th>`;
     row.forEach((val,j)=>{ html+=`<td class="${i===j?'cm-diag':'cm-off'}">${val}</td>`; });
     html += '</tr>';
   });
-  html += '</table>';
-  document.getElementById(containerId).innerHTML = html;
+  document.getElementById(containerId).innerHTML = html+'</table>';
 }
 
 function renderComparison(data) {
@@ -730,22 +660,10 @@ function renderComparison(data) {
   container.innerHTML = data.map(d=>`
     <div class="comparison-row ${d.type==='ours'?'ours':''}">
       <div class="model-name ${d.type==='ours'?'ours-label':''}">${d.model} ${d.type==='ours'?'⭐':''}</div>
-      <div>
-        <div class="comp-val" style="color:${d.type==='ours'?'var(--blue)':'var(--text2)'}">${d.sent_acc}%</div>
-        <div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.type==='ours'?'var(--blue)':'var(--border2)'}" data-val="${d.sent_acc}"></div></div>
-      </div>
-      <div>
-        <div class="comp-val" style="color:${d.type==='ours'?'var(--blue)':'var(--text2)'}">${d.manip_acc}%</div>
-        <div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.type==='ours'?'var(--blue)':'var(--border2)'}" data-val="${d.manip_acc}"></div></div>
-      </div>
-      <div>
-        <div class="comp-val" style="color:${d.type==='ours'?'var(--blue)':'var(--text2)'}">${d.bias_acc}%</div>
-        <div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.type==='ours'?'var(--blue)':'var(--border2)'}" data-val="${d.bias_acc}"></div></div>
-      </div>
-      <div>
-        <div class="comp-val" style="color:${d.f1===maxF1?'var(--green)':'var(--text2)'}">${d.f1}%</div>
-        <div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.f1===maxF1?'var(--green)':'var(--border2)'}" data-val="${d.f1}"></div></div>
-      </div>
+      <div><div class="comp-val" style="color:${d.type==='ours'?'var(--blue)':'var(--text2)'}">${d.sent_acc}%</div><div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.type==='ours'?'var(--blue)':'var(--border2)'}" data-val="${d.sent_acc}"></div></div></div>
+      <div><div class="comp-val" style="color:${d.type==='ours'?'var(--blue)':'var(--text2)'}">${d.manip_acc}%</div><div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.type==='ours'?'var(--blue)':'var(--border2)'}" data-val="${d.manip_acc}"></div></div></div>
+      <div><div class="comp-val" style="color:${d.type==='ours'?'var(--blue)':'var(--text2)'}">${d.bias_acc}%</div><div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.type==='ours'?'var(--blue)':'var(--border2)'}" data-val="${d.bias_acc}"></div></div></div>
+      <div><div class="comp-val" style="color:${d.f1===maxF1?'var(--green)':'var(--text2)'}">${d.f1}%</div><div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.f1===maxF1?'var(--green)':'var(--border2)'}" data-val="${d.f1}"></div></div></div>
     </div>`).join('');
   setTimeout(()=>container.querySelectorAll('.comp-bar').forEach(b=>b.style.width=b.dataset.val+'%'),100);
 }
@@ -753,8 +671,7 @@ function renderComparison(data) {
 function renderWordCloud(results) {
   const freq = {};
   results.forEach(r => {
-    const pred = r.pred_manipulation;
-    if(pred==='High'||pred==='Medium'){
+    if(r.pred_manipulation==='High'||r.pred_manipulation==='Medium'){
       r.text.toLowerCase().split(/\s+/).forEach(w=>{
         const clean = w.replace(/[^a-z]/g,'');
         if(clean.length>4) freq[clean]=(freq[clean]||0)+1;
@@ -764,24 +681,23 @@ function renderWordCloud(results) {
   const sorted = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,40);
   const max = sorted[0]?.[1]||1;
   const colors = ['#4f8ef7','#9b6dff','#ff5e7d','#ffa93d','#3dd68c'];
-  const container = document.getElementById('wordcloudWrap');
-  container.innerHTML = sorted.map(([word,count])=>{
-    const size = 0.7 + (count/max)*1.4;
+  document.getElementById('wordcloudWrap').innerHTML = sorted.map(([word,count])=>{
+    const size = 0.7+(count/max)*1.4;
     const color = colors[Math.floor(Math.random()*colors.length)];
     return `<span class="cloud-word" style="font-size:${size}rem;color:${color};opacity:${0.5+count/max*0.5}">${word}</span>`;
   }).join('');
 }
 
+// INTERNAL EVAL
 async function runEval() {
   const btn = document.getElementById('evalBtn');
-  btn.disabled = true;
-  btn.textContent = 'Running...';
-  document.getElementById('evalLoading').style.display = 'block';
-  document.getElementById('evalResults').style.display = 'none';
+  btn.disabled=true; btn.textContent='Running...';
+  document.getElementById('evalLoading').style.display='block';
+  document.getElementById('evalResults').style.display='none';
   try {
     const res = await fetch(`${API}/evaluate`);
     const data = await res.json();
-    document.getElementById('evalResults').style.display = 'block';
+    document.getElementById('evalResults').style.display='block';
     renderMetricGroup('mgSentiment', data.sentiment);
     renderMetricGroup('mgManipulation', data.manipulation);
     renderMetricGroup('mgBias', data.bias);
@@ -791,9 +707,69 @@ async function runEval() {
     renderComparison(data.comparison);
     renderWordCloud(data.results);
   } catch(e) { alert('Evaluation failed. Make sure the server is running.'); }
-  btn.disabled = false;
-  btn.textContent = 'Run Evaluation Again';
-  document.getElementById('evalLoading').style.display = 'none';
+  btn.disabled=false; btn.textContent='Run Internal Eval (30 samples)';
+  document.getElementById('evalLoading').style.display='none';
+}
+
+// REAL EVAL
+async function runRealEval() {
+  const btn = document.getElementById('realEvalBtn');
+  btn.disabled=true; btn.textContent='Running...';
+  document.getElementById('realEvalLoading').style.display='block';
+  document.getElementById('evalResults').style.display='none';
+  try {
+    const res = await fetch(`${API}/evaluate-real`);
+    const data = await res.json();
+    document.getElementById('evalResults').style.display='block';
+
+    if(data.sentiment && !data.sentiment.error){
+      const s = data.sentiment;
+      document.getElementById('mgSentiment').innerHTML = `
+        <div class="metric-group-title">Sentiment — ${s.dataset}</div>
+        <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.8rem">${s.samples} real samples</div>
+        ${['accuracy','precision','recall','f1'].map(m=>`
+          <div class="metric-row">
+            <div><div class="metric-name">${m.charAt(0).toUpperCase()+m.slice(1)}</div>
+            <div class="metric-bar-wrap"><div class="metric-bar" style="width:${s[m]}%"></div></div></div>
+            <div class="metric-val">${s[m]}%</div>
+          </div>`).join('')}`;
+    }
+
+    if(data.manipulation && !data.manipulation.error){
+      const m = data.manipulation;
+      document.getElementById('mgManipulation').innerHTML = `
+        <div class="metric-group-title">Manipulation — ${m.dataset}</div>
+        <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.8rem">${m.samples} real samples</div>
+        ${['accuracy','precision','recall','f1'].map(k=>`
+          <div class="metric-row">
+            <div><div class="metric-name">${k.charAt(0).toUpperCase()+k.slice(1)}</div>
+            <div class="metric-bar-wrap"><div class="metric-bar" style="width:${m[k]}%"></div></div></div>
+            <div class="metric-val">${m[k]}%</div>
+          </div>`).join('')}`;
+    }
+
+    document.getElementById('mgBias').innerHTML = `
+      <div class="metric-group-title">Bias Detection</div>
+      <div style="font-size:0.82rem;color:var(--text2);line-height:1.6;padding:0.5rem 0">
+        No public benchmark perfectly maps to our keyword-based bias system.
+        Bias evaluation requires a labeled dataset like AllSides or MBFC.
+        Listed in our roadmap as the next improvement.
+      </div>`;
+
+    if(data.sentiment && !data.sentiment.error)
+      renderCM('cmSentiment', data.sentiment.confusion_matrix, data.sentiment.labels);
+    if(data.manipulation && !data.manipulation.error)
+      renderCM('cmManipulation', data.manipulation.confusion_matrix, data.manipulation.labels);
+
+    if(data.note){
+      const noteDiv = document.createElement('div');
+      noteDiv.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:0.82rem;color:var(--text2);line-height:1.6;';
+      noteDiv.innerHTML=`<strong style="color:var(--blue)">📊 Dataset Note:</strong> ${data.note}`;
+      document.getElementById('evalResults').prepend(noteDiv);
+    }
+  } catch(e) { alert('Real evaluation failed. Make sure the server is running.'); }
+  btn.disabled=false; btn.textContent='Run Real Dataset Eval (SST-2 + LIAR)';
+  document.getElementById('realEvalLoading').style.display='none';
 }
 
 loadHistory();
