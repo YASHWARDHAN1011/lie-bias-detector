@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.pt
+*.bin
+*.safetensors
+results/history.json
+.cache/

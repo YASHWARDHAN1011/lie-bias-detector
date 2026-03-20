@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LinguaLens — AI Text Analyzer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg:        #0a0a0f;
+      --bg2:       #111118;
+      --card:      #16161f;
+      --card2:     #1c1c28;
+      --border:    #2a2a3d;
+      --border2:   #3d3d5c;
+      --blue:      #4f8ef7;
+      --purple:    #9b6dff;
+      --glow:      rgba(79,142,247,0.15);
+      --text:      #f0f0ff;
+      --text2:     #9090b0;
+      --text3:     #5a5a7a;
+      --green:     #3dd68c;
+      --red:       #ff5e7d;
+      --orange:    #ffa93d;
+      --neutral:   #9b6dff;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* CANVAS PARTICLES */
+    #particles { position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+
+    /* NAV */
+    nav {
+      position: sticky; top:0;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 100;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.2rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .nav-badge {
+      font-size: 0.7rem; font-weight: 500;
+      background: var(--glow); border: 1px solid var(--blue);
+      color: var(--blue); padding: 3px 10px; border-radius: 20px;
+    }
+
+    /* LAYOUT */
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; position: relative; z-index: 1; }
+
+    /* HERO */
+    .hero { text-align: center; padding: 3rem 0 2rem; }
+    .hero h1 { font-size: 2.8rem; font-weight: 700; line-height: 1.2; margin-bottom: 1rem; min-height: 70px; }
+    .hero h1 span { background: linear-gradient(135deg, var(--blue), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero h1 { color: var(--text); }
+    #typed, #typed span {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: none !important;
+}
+    .cursor { display: inline-block; width: 3px; height: 2.8rem; background: var(--blue); margin-left: 4px; vertical-align: middle; animation: blink 1s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .hero p { color: #c0c0d8; font-size: 1.05rem; max-width: 560px; margin: 0 auto 2rem; line-height: 1.7; }
+    .hero-stats { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2.5rem; }
+    .hero-stat { text-align: center; }
+    .hero-stat-value { font-size: 1.4rem; font-weight: 700; color: #ffffff; }
+    .hero-stat-label { font-size: 0.75rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* GRID */
+    .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; align-items: start; }
+
+    /* INPUT CARD */
+    .input-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.5rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .input-card:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px var(--glow); }
+    .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .input-label { font-size: 0.85rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; }
+    .counter { font-size: 0.8rem; color: var(--text3); }
+    .counter span { color: var(--blue); font-weight: 600; }
+
+    /* HIGHLIGHT EDITOR */
+    .editor-wrap { position: relative; margin-bottom: 1rem; }
+    #highlight-display {
+      position: absolute; top: 0; left: 0;
+      width: 100%; min-height: 180px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem; line-height: 1.7;
+      color: transparent;
+      pointer-events: none;
+      white-space: pre-wrap; word-wrap: break-word;
+      z-index: 1;
+    }
+    textarea {
+      position: relative;
+      width: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem; line-height: 1.7;
+      padding: 1rem; resize: vertical; min-height: 180px;
+      outline: none; transition: border-color 0.2s;
+      z-index: 2; background: transparent;
+      caret-color: var(--blue);
+    }
+    textarea::placeholder { color: var(--text3); }
+    textarea:focus { border-color: var(--blue); }
+
+    .highlight-manip { background: rgba(255,94,125,0.25); border-radius: 3px; color: var(--text); }
+    .highlight-bias  { background: rgba(79,142,247,0.25); border-radius: 3px; color: var(--text); }
+
+    /* LEGEND */
+    .highlight-legend { display: flex; gap: 1rem; margin-bottom: 0.8rem; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text3); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+    .legend-dot.manip { background: rgba(255,94,125,0.5); }
+    .legend-dot.bias  { background: rgba(79,142,247,0.5); }
+
+    /* SAMPLES */
+    .samples-label { font-size: 0.75rem; color: var(--text3); margin: 0.8rem 0 0.4rem; }
+    .sample-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .pill {
+      font-size: 0.75rem; background: var(--bg2); border: 1px solid var(--border);
+      color: var(--text2); padding: 4px 12px; border-radius: 20px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .pill:hover { border-color: var(--blue); color: var(--blue); background: var(--glow); }
+
+    /* PROGRESS */
+    .progress-wrap { display: none; margin-top: 1rem; }
+    .progress-steps { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .progress-step { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .progress-step-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--purple)); width: 0%; transition: width 0.6s ease; }
+    .progress-label { font-size: 0.78rem; color: var(--text3); text-align: center; }
+
+    /* BUTTON */
+    .btn-analyze {
+      width: 100%; padding: 0.9rem;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      border: none; border-radius: 10px;
+      color: #fff; font-family: 'Inter', sans-serif;
+      font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-analyze:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-analyze:active { transform: translateY(0); }
+    .btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-text { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* HISTORY */
+    .history-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; position: sticky; top: 80px; }
+    .history-title { font-size: 0.85rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+    .count-badge { background: var(--glow); border: 1px solid var(--blue); color: var(--blue); font-size: 0.7rem; padding: 1px 7px; border-radius: 10px; }
+    .history-empty { color: var(--text3); font-size: 0.85rem; text-align: center; padding: 2rem 0; }
+    .history-item { padding: 0.75rem; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.6rem; cursor: pointer; transition: all 0.2s; }
+    .history-item:hover { border-color: var(--border2); background: var(--card2); }
+    .history-item-text { font-size: 0.8rem; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.4rem; }
+    .history-item-meta { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .mini-badge { font-size: 0.68rem; padding: 2px 7px; border-radius: 6px; font-weight: 500; }
+    .mini-badge.positive { background: rgba(61,214,140,0.15); color: var(--green); }
+    .mini-badge.negative { background: rgba(255,94,125,0.15); color: var(--red); }
+    .mini-badge.neutral  { background: rgba(155,109,255,0.15); color: var(--neutral); }
+    .mini-badge.high     { background: rgba(255,94,125,0.15); color: var(--red); }
+    .mini-badge.medium   { background: rgba(255,169,61,0.15); color: var(--orange); }
+    .mini-badge.low      { background: rgba(61,214,140,0.15); color: var(--green); }
+    .history-time { font-size: 0.7rem; color: var(--text3); margin-top: 0.3rem; }
+
+    /* RESULTS */
+    .results-section { margin-top: 1.5rem; }
+
+    /* RISK SCORE CARD */
+    .risk-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.5rem;
+      display: flex; align-items: center; gap: 2rem;
+      margin-bottom: 1rem;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+    .risk-card.visible { opacity: 1; transform: translateY(0); }
+    .risk-gauge-wrap { position: relative; width: 100px; height: 100px; flex-shrink: 0; }
+    .risk-gauge-wrap svg { transform: rotate(-90deg); }
+    .risk-track { fill: none; stroke: var(--border); stroke-width: 8; }
+    .risk-fill  { fill: none; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 251; stroke-dashoffset: 251; transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1), stroke 0.5s; }
+    .risk-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+    .risk-number { font-size: 1.6rem; font-weight: 700; line-height: 1; }
+    .risk-of-10  { font-size: 0.7rem; color: var(--text3); }
+    .risk-info { flex: 1; }
+    .risk-title { font-size: 0.72rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+    .risk-verdict-label { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .risk-desc { font-size: 0.85rem; color: var(--text2); line-height: 1.5; }
+
+    /* RESULT CARDS GRID */
+    .results-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1rem; }
+    .result-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.25rem;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.4s, transform 0.4s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .result-card.visible { opacity: 1; transform: translateY(0); }
+    .result-card.pulse-green { animation: pulseGreen 1.5s ease; }
+    .result-card.pulse-red   { animation: pulseRed   1.5s ease; }
+    .result-card.pulse-orange{ animation: pulseOrange 1.5s ease; }
+    .result-card.pulse-blue  { animation: pulseBlue  1.5s ease; }
+    @keyframes pulseGreen  { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(61,214,140,0.4)} }
+    @keyframes pulseRed    { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(255,94,125,0.4)} }
+    @keyframes pulseOrange { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(255,169,61,0.4)} }
+    @keyframes pulseBlue   { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(79,142,247,0.4)} }
+
+    .result-card-label { font-size: 0.72rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem; }
+    .result-card-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .result-card-sub   { font-size: 0.8rem; color: var(--text3); }
+    .gauge-wrap  { margin: 0.5rem 0; }
+    .gauge-track { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
+    .gauge-fill  { height: 100%; border-radius: 3px; width: 0%; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+
+    /* WORDS CARDS */
+    .words-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+    .words-card.visible { opacity: 1; transform: translateY(0); }
+    .words-card-title { font-size: 0.72rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.8rem; }
+    .word-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .word-tag { font-size: 0.8rem; padding: 4px 10px; border-radius: 6px; font-weight: 500; }
+    .word-tag.trigger   { background: rgba(255,94,125,0.12); border: 1px solid rgba(255,94,125,0.3); color: var(--red); }
+    .word-tag.bias-word { background: rgba(79,142,247,0.12); border: 1px solid rgba(79,142,247,0.3); color: var(--blue); }
+    .word-tag.none      { background: var(--bg2); border: 1px solid var(--border); color: var(--text3); }
+
+    /* VERDICT */
+    .verdict-card {
+      background: linear-gradient(135deg, rgba(79,142,247,0.08), rgba(155,109,255,0.08));
+      border: 1px solid var(--border2); border-radius: 14px; padding: 1.5rem; margin-bottom: 1rem;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+    .verdict-card.visible { opacity: 1; transform: translateY(0); }
+    .verdict-label { font-size: 0.72rem; font-weight: 600; color: var(--blue); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem; }
+    .verdict-text  { font-size: 1rem; line-height: 1.7; color: var(--text); }
+
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .history-card { position: static; }
+      .results-grid { grid-template-columns: 1fr 1fr; }
+      .hero h1 { font-size: 2rem; }
+    }
+    @media (max-width: 560px) {
+      .results-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 1rem; }
+      .risk-card { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-icon">🔍</div>
+    LinguaLens
+  </div>
+  
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <h1 id="heroText"><span id="typed"></span><span class="cursor"></span></h1>
+    <p>Paste any text — news, speeches, reviews — and instantly detect hidden sentiment, political bias, and manipulative language.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-value">3</div>
+        <div class="hero-stat-label">Detection Layers</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">100+</div>
+        <div class="hero-stat-label">Trigger Words</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">AI</div>
+        <div class="hero-stat-label">Powered Model</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <div class="input-card">
+        <div class="input-header">
+          <span class="input-label">Enter Text</span>
+          <span class="counter"><span id="wordCount">0</span> words · <span id="charCount">0</span> chars</span>
+        </div>
+
+        <div class="highlight-legend">
+          <div class="legend-item"><div class="legend-dot manip"></div> Manipulation word</div>
+          <div class="legend-item"><div class="legend-dot bias"></div> Bias indicator</div>
+        </div>
+
+        <div class="editor-wrap">
+          <div id="highlight-display" aria-hidden="true"></div>
+          <textarea id="textInput"
+            placeholder="Paste a news headline, political speech, product review, or any text..."
+            oninput="onInput()"></textarea>
+        </div>
+
+        <div class="samples-label">Try a sample:</div>
+        <div class="sample-pills">
+          <span class="pill" onclick="loadSample(0)">🗞 Political speech</span>
+          <span class="pill" onclick="loadSample(1)">📰 Biased headline</span>
+          <span class="pill" onclick="loadSample(2)">⭐ Fake review</span>
+          <span class="pill" onclick="loadSample(3)">✅ Neutral article</span>
+        </div>
+
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress-steps">
+            <div class="progress-step"><div class="progress-step-fill" id="step1"></div></div>
+            <div class="progress-step"><div class="progress-step-fill" id="step2"></div></div>
+            <div class="progress-step"><div class="progress-step-fill" id="step3"></div></div>
+          </div>
+          <div class="progress-label" id="progressLabel">Analyzing...</div>
+        </div>
+
+        <button class="btn-analyze" id="analyzeBtn" onclick="analyze()">
+          <div class="btn-text">
+            <div class="spinner" id="spinner"></div>
+            <span id="btnLabel">Analyze Text</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="results-section" id="resultsSection" style="display:none">
+
+        <!-- RISK SCORE -->
+        <div class="risk-card" id="riskCard">
+          <div class="risk-gauge-wrap">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle class="risk-track" cx="50" cy="50" r="40"/>
+              <circle class="risk-fill" id="riskCircle" cx="50" cy="50" r="40"/>
+            </svg>
+            <div class="risk-label">
+              <div class="risk-number" id="riskNumber">0</div>
+              <div class="risk-of-10">/10</div>
+            </div>
+          </div>
+          <div class="risk-info">
+            <div class="risk-title">Overall Risk Score</div>
+            <div class="risk-verdict-label" id="riskLabel">—</div>
+            <div class="risk-desc" id="riskDesc">—</div>
+          </div>
+        </div>
+
+        <!-- 3 CARDS -->
+        <div class="results-grid">
+          <div class="result-card" id="cardSentiment">
+            <div class="result-card-label">Sentiment</div>
+            <div class="result-card-value" id="sentimentValue">—</div>
+            <div class="gauge-wrap"><div class="gauge-track"><div class="gauge-fill" id="sentimentGauge"></div></div></div>
+            <div class="result-card-sub" id="sentimentConf">Confidence: —</div>
+          </div>
+          <div class="result-card" id="cardManipulation">
+            <div class="result-card-label">Manipulation Level</div>
+            <div class="result-card-value" id="manipulationValue">—</div>
+            <div class="gauge-wrap"><div class="gauge-track"><div class="gauge-fill" id="manipulationGauge"></div></div></div>
+            <div class="result-card-sub" id="manipulationSub">—</div>
+          </div>
+          <div class="result-card" id="cardBias">
+            <div class="result-card-label">Political Bias</div>
+            <div class="result-card-value" id="biasValue">—</div>
+            <div class="result-card-sub">Based on keyword analysis</div>
+          </div>
+        </div>
+
+        <div class="words-card" id="cardTrigger">
+          <div class="words-card-title">⚠️ Manipulation Trigger Words</div>
+          <div class="word-tags" id="triggerWords"></div>
+        </div>
+
+        <div class="words-card" id="cardBiasWords">
+          <div class="words-card-title">🧭 Bias Indicator Words</div>
+          <div class="word-tags" id="biasWords"></div>
+        </div>
+
+        <div class="verdict-card" id="cardVerdict">
+          <div class="verdict-label">🤖 AI Verdict</div>
+          <div class="verdict-text" id="verdictText"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div>
+      <div class="history-card">
+        <div class="history-title">
+          Recent Analyses
+          <span class="count-badge" id="historyCount">0</span>
+        </div>
+        <div id="historyList">
+          <div class="history-empty">No analyses yet.<br>Run your first scan above.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://127.0.0.1:8000';
+
+// ─── PARTICLES ───────────────────────────────────────────────
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H, dots = [];
+
+function initParticles() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  dots = Array.from({length: 60}, () => ({
+    x: Math.random() * W, y: Math.random() * H,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    r: Math.random() * 1.5 + 0.5,
+    a: Math.random() * 0.4 + 0.1
+  }));
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+  dots.forEach(d => {
+    d.x += d.vx; d.y += d.vy;
+    if (d.x < 0) d.x = W; if (d.x > W) d.x = 0;
+    if (d.y < 0) d.y = H; if (d.y > H) d.y = 0;
+    ctx.beginPath();
+    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(79,142,247,${d.a})`;
+    ctx.fill();
+  });
+  // Draw lines between close dots
+  for (let i = 0; i < dots.length; i++) {
+    for (let j = i+1; j < dots.length; j++) {
+      const dx = dots[i].x - dots[j].x;
+      const dy = dots[i].y - dots[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.moveTo(dots[i].x, dots[i].y);
+        ctx.lineTo(dots[j].x, dots[j].y);
+        ctx.strokeStyle = `rgba(79,142,247,${0.08 * (1 - dist/100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawParticles);
+}
+window.addEventListener('resize', initParticles);
+initParticles();
+drawParticles();
+
+// ─── TYPING EFFECT ────────────────────────────────────────────
+const phrases = ['Read Between the Lines', 'Detect Hidden Bias', 'Expose Manipulation', 'Analyze Any Text'];
+let pi = 0, ci = 0, deleting = false;
+function typeEffect() {
+  const el = document.getElementById('typed');
+  const phrase = phrases[pi];
+  if (!deleting) {
+    el.innerHTML = `<span>${phrase.slice(0, ci+1)}</span>`;
+    ci++;
+    if (ci === phrase.length) { deleting = true; setTimeout(typeEffect, 2000); return; }
+  } else {
+    el.innerHTML = `<span>${phrase.slice(0, ci-1)}</span>`;
+    ci--;
+    if (ci === 0) { deleting = false; pi = (pi+1) % phrases.length; }
+  }
+  setTimeout(typeEffect, deleting ? 40 : 80);
+}
+typeEffect();
+
+// ─── HIGHLIGHT WORDS ──────────────────────────────────────────
+const MANIP_WORDS = [
+  "destroy","danger","threat","crisis","attack","collapse","catastrophe",
+  "disaster","chaos","panic","terror","violence","war","invasion","deadly",
+  "radical","corrupt","evil","shameful","disgusting","pathetic","outrageous",
+  "criminal","traitor","liar","fraud","extremist","fanatic","puppet","regime",
+  "propaganda","manipulate","always","never","everyone","nobody","nothing",
+  "everything","worst","best","greatest","totally","absolutely","completely",
+  "shocking","incredible","unprecedented","massive","unbelievable","insane",
+  "secret","exposed","revealed","breaking","urgent","miracle","cure","banned",
+  "censored","hidden","leaked"
+];
+const BIAS_WORDS = [
+  "equality","diversity","inclusion","welfare","progressive","social justice",
+  "universal healthcare","green energy","feminism","gun control","working class",
+  "unions","systemic","privilege","marginalized","oppression","activist","reform",
+  "freedom","patriot","traditional","border security","second amendment","tax cuts",
+  "free market","small government","law and order","national security","america first",
+  "constitution","military","pro-life","capitalism","deep state","mainstream media",
+  "cancel culture","woke","globalist"
+];
+
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function updateHighlight(text) {
+  let html = escapeHtml(text);
+  // Sort by length desc to match longer phrases first
+  const allWords = [
+    ...BIAS_WORDS.map(w => ({w, cls:'highlight-bias'})),
+    ...MANIP_WORDS.map(w => ({w, cls:'highlight-manip'}))
+  ].sort((a,b) => b.w.length - a.w.length);
+
+  allWords.forEach(({w, cls}) => {
+    const re = new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`, 'gi');
+    html = html.replace(re, m => `<mark class="${cls}">${m}</mark>`);
+  });
+  document.getElementById('highlight-display').innerHTML = html;
+}
+
+function onInput() {
+  const text = document.getElementById('textInput').value;
+  const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+  document.getElementById('wordCount').textContent = words;
+  document.getElementById('charCount').textContent = text.length;
+  updateHighlight(text);
+  syncScroll();
+}
+
+function syncScroll() {
+  const ta = document.getElementById('textInput');
+  const disp = document.getElementById('highlight-display');
+  disp.scrollTop = ta.scrollTop;
+}
+
+// ─── SAMPLES ─────────────────────────────────────────────────
+const SAMPLES = [
+  "The radical left has catastrophically destroyed our once-great economy and they will stop at nothing to silence anyone who dares to speak the truth about their corrupt regime.",
+  "Breaking: Shocking truth exposed — government secretly banning this miracle cure that doctors don't want you to know about. Share before it gets censored!",
+  "This product is absolutely the greatest thing I have ever purchased in my entire life. Everyone needs this. Nothing else comes close. It completely changed everything for me!",
+  "According to officials, the committee announced a new trade agreement following several months of negotiations. Analysts say the deal could impact regional markets."
+];
+function loadSample(i) {
+  document.getElementById('textInput').value = SAMPLES[i];
+  onInput();
+}
+
+// ─── COUNTER ANIMATION ───────────────────────────────────────
+function animateCounter(el, start, end, duration, suffix='') {
+  const startTime = performance.now();
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(start + (end - start) * ease) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// ─── RISK SCORE ──────────────────────────────────────────────
+function calcRiskScore(sentiment, manipulation, bias) {
+  let score = 0;
+  if (sentiment === 'Negative') score += 2;
+  else if (sentiment === 'Neutral') score += 1;
+  if (manipulation === 'High') score += 5;
+  else if (manipulation === 'Medium') score += 3;
+  else score += 1;
+  if (bias !== 'Neutral / Unclear') score += 2;
+  return Math.min(score, 10);
+}
+
+function riskMeta(score) {
+  if (score >= 8) return { label: 'High Risk', color: '#ff5e7d', desc: 'This text shows strong signs of manipulation and bias.' };
+  if (score >= 5) return { label: 'Medium Risk', color: '#ffa93d', desc: 'Some concerning language patterns detected.' };
+  return { label: 'Low Risk', color: '#3dd68c', desc: 'This text appears relatively balanced and neutral.' };
+}
+
+// ─── COLORS ──────────────────────────────────────────────────
+function sentimentColor(s) { return s==='Positive'?'var(--green)':s==='Negative'?'var(--red)':'var(--neutral)'; }
+function manipColor(m)      { return m==='High'?'var(--red)':m==='Medium'?'var(--orange)':'var(--green)'; }
+function manipWidth(m)      { return m==='High'?'90%':m==='Medium'?'50%':'15%'; }
+function manipSub(m)        { return m==='High'?'Strong emotional manipulation':m==='Medium'?'Some loaded language':'Minimal manipulation'; }
+function biasColor(b)       { return b.includes('Left')?'var(--blue)':b.includes('Right')?'var(--red)':'var(--neutral)'; }
+function pulseClass(color)  {
+  if (color.includes('green')) return 'pulse-green';
+  if (color.includes('red'))   return 'pulse-red';
+  if (color.includes('orange'))return 'pulse-orange';
+  return 'pulse-blue';
+}
+
+// ─── PROGRESS ────────────────────────────────────────────────
+async function runProgress() {
+  const steps = ['Analyzing sentiment...','Detecting manipulation...','Checking political bias...'];
+  document.getElementById('progressWrap').style.display = 'block';
+  for (let i = 0; i < 3; i++) {
+    document.getElementById('progressLabel').textContent = steps[i];
+    document.getElementById(`step${i+1}`).style.width = '100%';
+    await new Promise(r => setTimeout(r, 600));
+  }
+}
+
+// ─── REVEAL ──────────────────────────────────────────────────
+function revealCards(data) {
+  document.getElementById('resultsSection').style.display = 'block';
+  const conf = parseFloat(data.confidence);
+  const score = calcRiskScore(data.sentiment, data.manipulation_level, data.bias);
+  const meta  = riskMeta(score);
+
+  // Risk card
+  setTimeout(() => {
+    const card = document.getElementById('riskCard');
+    card.classList.add('visible');
+    animateCounter(document.getElementById('riskNumber'), 0, score, 1000);
+    const circle = document.getElementById('riskCircle');
+    const offset = 251 - (score / 10) * 251;
+    circle.style.stroke = meta.color;
+    circle.style.strokeDashoffset = offset;
+    document.getElementById('riskLabel').textContent = meta.label;
+    document.getElementById('riskLabel').style.color = meta.color;
+    document.getElementById('riskDesc').textContent = meta.desc;
+  }, 100);
+
+  // Sentiment
+  setTimeout(() => {
+    const card = document.getElementById('cardSentiment');
+    const color = sentimentColor(data.sentiment);
+    document.getElementById('sentimentValue').textContent = data.sentiment;
+    document.getElementById('sentimentValue').style.color = color;
+    document.getElementById('sentimentGauge').style.width = conf + '%';
+    document.getElementById('sentimentGauge').style.background = color;
+    document.getElementById('sentimentConf').textContent = `Confidence: ${data.confidence}`;
+    card.classList.add('visible');
+    setTimeout(() => card.classList.add(pulseClass(color)), 100);
+  }, 400);
+
+  // Manipulation
+  setTimeout(() => {
+    const card = document.getElementById('cardManipulation');
+    const color = manipColor(data.manipulation_level);
+    document.getElementById('manipulationValue').textContent = data.manipulation_level;
+    document.getElementById('manipulationValue').style.color = color;
+    document.getElementById('manipulationGauge').style.width  = manipWidth(data.manipulation_level);
+    document.getElementById('manipulationGauge').style.background = color;
+    document.getElementById('manipulationSub').textContent = manipSub(data.manipulation_level);
+    card.classList.add('visible');
+    setTimeout(() => card.classList.add(pulseClass(color)), 100);
+  }, 600);
+
+  // Bias
+  setTimeout(() => {
+    const card = document.getElementById('cardBias');
+    const color = biasColor(data.bias);
+    document.getElementById('biasValue').textContent = data.bias;
+    document.getElementById('biasValue').style.color = color;
+    card.classList.add('visible');
+    setTimeout(() => card.classList.add(pulseClass(color)), 100);
+  }, 800);
+
+  // Trigger words
+  setTimeout(() => {
+    const card = document.getElementById('cardTrigger');
+    const container = document.getElementById('triggerWords');
+    container.innerHTML = '';
+    data.trigger_words.forEach(w => {
+      const tag = document.createElement('span');
+      tag.className = 'word-tag ' + (w === 'None found' ? 'none' : 'trigger');
+      tag.textContent = w;
+      container.appendChild(tag);
+    });
+    card.classList.add('visible');
+  }, 1000);
+
+  // Bias words
+  setTimeout(() => {
+    const card = document.getElementById('cardBiasWords');
+    const container = document.getElementById('biasWords');
+    container.innerHTML = '';
+    data.bias_words_found.forEach(w => {
+      const tag = document.createElement('span');
+      tag.className = 'word-tag ' + (w === 'None found' ? 'none' : 'bias-word');
+      tag.textContent = w;
+      container.appendChild(tag);
+    });
+    card.classList.add('visible');
+  }, 1200);
+
+  // Verdict
+  setTimeout(() => {
+    document.getElementById('verdictText').textContent = data.verdict;
+    document.getElementById('cardVerdict').classList.add('visible');
+  }, 1400);
+}
+
+// ─── ANALYZE ─────────────────────────────────────────────────
+async function analyze() {
+  const text = document.getElementById('textInput').value.trim();
+  if (!text) return;
+
+  // Reset
+  ['cardSentiment','cardManipulation','cardBias','cardTrigger','cardBiasWords','cardVerdict','riskCard']
+    .forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('visible','pulse-green','pulse-red','pulse-orange','pulse-blue');
+    });
+  ['step1','step2','step3'].forEach(id => document.getElementById(id).style.width = '0%');
+  document.getElementById('riskCircle').style.strokeDashoffset = '251';
+
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true;
+  document.getElementById('spinner').style.display = 'block';
+  document.getElementById('btnLabel').textContent = 'Analyzing...';
+
+  await runProgress();
+
+  try {
+    const res = await fetch(`${API}/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    const data = await res.json();
+    revealCards(data);
+    loadHistory();
+  } catch(e) {
+    alert('Could not connect to backend. Make sure uvicorn is running.');
+  }
+
+  btn.disabled = false;
+  document.getElementById('spinner').style.display = 'none';
+  document.getElementById('btnLabel').textContent = 'Analyze Text';
+  document.getElementById('progressWrap').style.display = 'none';
+}
+
+// ─── HISTORY ─────────────────────────────────────────────────
+async function loadHistory() {
+  try {
+    const res = await fetch(`${API}/history`);
+    const history = await res.json();
+    document.getElementById('historyCount').textContent = history.length;
+    const list = document.getElementById('historyList');
+    if (!history.length) {
+      list.innerHTML = '<div class="history-empty">No analyses yet.<br>Run your first scan above.</div>';
+      return;
+    }
+    list.innerHTML = history.map(h => `
+      <div class="history-item">
+        <div class="history-item-text">${h.text_preview}</div>
+        <div class="history-item-meta">
+          <span class="mini-badge ${h.sentiment.toLowerCase()}">${h.sentiment}</span>
+          <span class="mini-badge ${h.manipulation_level.toLowerCase()}">${h.manipulation_level}</span>
+        </div>
+        <div class="history-time">${h.timestamp}</div>
+      </div>
+    `).join('');
+  } catch(e) {}
+}
+
+loadHistory();
+</script>
+</body>
+</html>
