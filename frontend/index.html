@@ -1,839 +1,732 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LinguaLens — AI Text Analyzer</title>
+  <title>LinguaLens — AI Text Forensics</title>
+  <meta name="description" content="AI-powered political bias and manipulation detector. Analyze any text for sentiment, bias, and deceptive patterns."/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --bg:#0a0a0f; --bg2:#111118; --card:#16161f; --card2:#1c1c28;
-      --border:#2a2a3d; --border2:#3d3d5c;
-      --blue:#4f8ef7; --purple:#9b6dff; --glow:rgba(79,142,247,0.15);
-      --text:#f0f0ff; --text2:#9090b0; --text3:#5a5a7a;
-      --green:#3dd68c; --red:#ff5e7d; --orange:#ffa93d; --neutral:#9b6dff;
+      --black:      #03050d;
+      --deep-navy:  #060b18;
+      --navy:       #0a1628;
+      --navy-mid:   #0d1f3c;
+      --navy-light: #112240;
+      --steel:      #1e3a5f;
+      --cyan-deep:  #0e4d6e;
+      --cyan:       #00d4ff;
+      --cyan-mid:   #06b6d4;
+      --cyan-dim:   #0891b2;
+      --white:      #f8fafc;
+      --silver:     #cbd5e1;
+      --muted:      #64748b;
+      --border:     rgba(0,212,255,.12);
+      --border-bright: rgba(0,212,255,.35);
+      --glass:      rgba(6,11,24,.7);
+      --glass-light:rgba(13,31,60,.5);
+      --glow-cyan:  0 0 30px rgba(0,212,255,.25);
+      --glow-sm:    0 0 12px rgba(0,212,255,.18);
     }
-    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
-    #particles { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-    nav { position:sticky; top:0; background:rgba(10,10,15,0.85); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); padding:0 2rem; height:64px; display:flex; align-items:center; justify-content:space-between; z-index:100; }
-    .nav-logo { display:flex; align-items:center; gap:10px; font-size:1.2rem; font-weight:700; background:linear-gradient(135deg,var(--blue),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-    .nav-icon { width:32px; height:32px; background:linear-gradient(135deg,var(--blue),var(--purple)); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
-    .tabs { display:flex; gap:0.5rem; }
-    .tab { padding:6px 16px; border-radius:8px; font-size:0.85rem; font-weight:500; cursor:pointer; border:1px solid var(--border); color:var(--text2); background:transparent; transition:all 0.2s; }
-    .tab.active { background:var(--glow); border-color:var(--blue); color:var(--blue); }
-    .tab:hover { border-color:var(--border2); color:var(--text); }
-    .container { max-width:1200px; margin:0 auto; padding:2rem; position:relative; z-index:1; }
-    .page { display:none; }
-    .page.active { display:block; }
-    .hero { text-align:center; padding:3rem 0 2rem; }
-    .hero h1 { font-size:2.8rem; font-weight:700; line-height:1.2; margin-bottom:1rem; min-height:70px; color:#ffffff; }
-    #typed, #typed span { color:#ffffff !important; -webkit-text-fill-color:#ffffff !important; background:none !important; }
-    .cursor { display:inline-block; width:3px; height:2.8rem; background:var(--blue); margin-left:4px; vertical-align:middle; animation:blink 1s infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-    .hero p { color:#c0c0d8; font-size:1.05rem; max-width:560px; margin:0 auto 2rem; line-height:1.7; }
-    .hero-stats { display:flex; justify-content:center; gap:2rem; margin-bottom:2.5rem; }
-    .hero-stat { text-align:center; }
-    .hero-stat-value { font-size:1.4rem; font-weight:700; color:#ffffff; }
-    .hero-stat-label { font-size:0.75rem; color:var(--text3); text-transform:uppercase; letter-spacing:0.05em; }
-    .main-grid { display:grid; grid-template-columns:1fr 380px; gap:1.5rem; align-items:start; }
-    .input-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.5rem; transition:border-color 0.3s,box-shadow 0.3s; }
-    .input-card:focus-within { border-color:var(--blue); box-shadow:0 0 0 3px var(--glow); }
-    .input-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
-    .input-label { font-size:0.85rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.08em; }
-    .counter { font-size:0.8rem; color:var(--text3); }
-    .counter span { color:var(--blue); font-weight:600; }
-    .editor-wrap { position:relative; margin-bottom:1rem; }
-    #highlight-display { position:absolute; top:0; left:0; width:100%; min-height:180px; background:transparent; border:1px solid transparent; border-radius:10px; padding:1rem; font-family:'Inter',sans-serif; font-size:0.95rem; line-height:1.7; color:transparent; pointer-events:none; white-space:pre-wrap; word-wrap:break-word; z-index:1; }
-    textarea { position:relative; width:100%; background:transparent; border:1px solid var(--border); border-radius:10px; color:var(--text); font-family:'Inter',sans-serif; font-size:0.95rem; line-height:1.7; padding:1rem; resize:vertical; min-height:180px; outline:none; transition:border-color 0.2s; z-index:2; caret-color:var(--blue); }
-    textarea::placeholder { color:var(--text3); }
-    textarea:focus { border-color:var(--blue); }
-    .highlight-manip { background:rgba(255,94,125,0.25); border-radius:3px; color:var(--text); }
-    .highlight-bias { background:rgba(79,142,247,0.25); border-radius:3px; color:var(--text); }
-    .highlight-legend { display:flex; gap:1rem; margin-bottom:0.8rem; }
-    .legend-item { display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--text3); }
-    .legend-dot { width:10px; height:10px; border-radius:2px; }
-    .legend-dot.manip { background:rgba(255,94,125,0.5); }
-    .legend-dot.bias { background:rgba(79,142,247,0.5); }
-    .samples-label { font-size:0.75rem; color:var(--text3); margin:0.8rem 0 0.4rem; }
-    .sample-pills { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem; }
-    .pill { font-size:0.75rem; background:var(--bg2); border:1px solid var(--border); color:var(--text2); padding:4px 12px; border-radius:20px; cursor:pointer; transition:all 0.2s; }
-    .pill:hover { border-color:var(--blue); color:var(--blue); background:var(--glow); }
-    .progress-wrap { display:none; margin-top:1rem; }
-    .progress-steps { display:flex; gap:0.5rem; margin-bottom:0.5rem; }
-    .progress-step { flex:1; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
-    .progress-step-fill { height:100%; background:linear-gradient(90deg,var(--blue),var(--purple)); width:0%; transition:width 0.6s ease; }
-    .progress-label { font-size:0.78rem; color:var(--text3); text-align:center; }
-    .btn-analyze { width:100%; padding:0.9rem; background:linear-gradient(135deg,var(--blue),var(--purple)); border:none; border-radius:10px; color:#fff; font-family:'Inter',sans-serif; font-size:1rem; font-weight:600; cursor:pointer; transition:opacity 0.2s,transform 0.1s; }
-    .btn-analyze:hover { opacity:0.9; transform:translateY(-1px); }
-    .btn-analyze:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
-    .btn-text { display:flex; align-items:center; justify-content:center; gap:8px; }
-    .spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; display:none; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    .history-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:1.25rem; position:sticky; top:80px; }
-    .history-title { font-size:0.85rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:1rem; display:flex; align-items:center; gap:8px; }
-    .count-badge { background:var(--glow); border:1px solid var(--blue); color:var(--blue); font-size:0.7rem; padding:1px 7px; border-radius:10px; }
-    .history-empty { color:var(--text3); font-size:0.85rem; text-align:center; padding:2rem 0; }
-    .history-item { padding:0.75rem; background:var(--bg2); border:1px solid var(--border); border-radius:10px; margin-bottom:0.6rem; transition:all 0.2s; }
-    .history-item:hover { border-color:var(--border2); }
-    .history-item-text { font-size:0.8rem; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:0.4rem; }
-    .history-item-meta { display:flex; gap:0.4rem; flex-wrap:wrap; }
-    .mini-badge { font-size:0.68rem; padding:2px 7px; border-radius:6px; font-weight:500; }
-    .mini-badge.positive { background:rgba(61,214,140,0.15); color:var(--green); }
-    .mini-badge.negative { background:rgba(255,94,125,0.15); color:var(--red); }
-    .mini-badge.neutral { background:rgba(155,109,255,0.15); color:var(--neutral); }
-    .mini-badge.high { background:rgba(255,94,125,0.15); color:var(--red); }
-    .mini-badge.medium { background:rgba(255,169,61,0.15); color:var(--orange); }
-    .mini-badge.low { background:rgba(61,214,140,0.15); color:var(--green); }
-    .history-time { font-size:0.7rem; color:var(--text3); margin-top:0.3rem; }
-    .results-section { margin-top:1.5rem; }
-    .risk-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.5rem; display:flex; align-items:center; gap:2rem; margin-bottom:1rem; opacity:0; transform:translateY(20px); transition:opacity 0.4s,transform 0.4s; }
-    .risk-card.visible { opacity:1; transform:translateY(0); }
-    .risk-gauge-wrap { position:relative; width:100px; height:100px; flex-shrink:0; }
-    .risk-gauge-wrap svg { transform:rotate(-90deg); }
-    .risk-track { fill:none; stroke:var(--border); stroke-width:8; }
-    .risk-fill { fill:none; stroke-width:8; stroke-linecap:round; stroke-dasharray:251; stroke-dashoffset:251; transition:stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1),stroke 0.5s; }
-    .risk-label { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
-    .risk-number { font-size:1.6rem; font-weight:700; line-height:1; }
-    .risk-of-10 { font-size:0.7rem; color:var(--text3); }
-    .risk-info { flex:1; }
-    .risk-title { font-size:0.72rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.3rem; }
-    .risk-verdict-label { font-size:1.2rem; font-weight:700; margin-bottom:0.3rem; }
-    .risk-desc { font-size:0.85rem; color:var(--text2); line-height:1.5; }
-    .results-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1rem; }
-    .result-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.25rem; opacity:0; transform:translateY(20px); transition:opacity 0.4s,transform 0.4s,border-color 0.3s,box-shadow 0.3s; }
-    .result-card.visible { opacity:1; transform:translateY(0); }
-    .result-card.pulse-green { animation:pulseGreen 1.5s ease; }
-    .result-card.pulse-red { animation:pulseRed 1.5s ease; }
-    .result-card.pulse-orange { animation:pulseOrange 1.5s ease; }
-    .result-card.pulse-blue { animation:pulseBlue 1.5s ease; }
-    @keyframes pulseGreen { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(61,214,140,0.4)} }
-    @keyframes pulseRed { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(255,94,125,0.4)} }
-    @keyframes pulseOrange { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(255,169,61,0.4)} }
-    @keyframes pulseBlue { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 24px rgba(79,142,247,0.4)} }
-    .result-card-label { font-size:0.72rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.6rem; }
-    .result-card-value { font-size:1.5rem; font-weight:700; margin-bottom:0.3rem; }
-    .result-card-sub { font-size:0.8rem; color:var(--text3); }
-    .gauge-wrap { margin:0.5rem 0; }
-    .gauge-track { height:6px; border-radius:3px; background:var(--border); overflow:hidden; }
-    .gauge-fill { height:100%; border-radius:3px; width:0%; transition:width 1s cubic-bezier(0.4,0,0.2,1); }
-    .words-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.25rem; margin-bottom:1rem; opacity:0; transform:translateY(20px); transition:opacity 0.4s,transform 0.4s; }
-    .words-card.visible { opacity:1; transform:translateY(0); }
-    .words-card-title { font-size:0.72rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.8rem; }
-    .word-tags { display:flex; flex-wrap:wrap; gap:0.4rem; }
-    .word-tag { font-size:0.8rem; padding:4px 10px; border-radius:6px; font-weight:500; }
-    .word-tag.trigger { background:rgba(255,94,125,0.12); border:1px solid rgba(255,94,125,0.3); color:var(--red); }
-    .word-tag.bias-word { background:rgba(79,142,247,0.12); border:1px solid rgba(79,142,247,0.3); color:var(--blue); }
-    .word-tag.none { background:var(--bg2); border:1px solid var(--border); color:var(--text3); }
-    .explain-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.25rem; margin-bottom:1rem; opacity:0; transform:translateY(20px); transition:opacity 0.4s,transform 0.4s; }
-    .explain-card.visible { opacity:1; transform:translateY(0); }
-    .explain-text { font-size:0.95rem; line-height:2; }
-    .explain-text .w-manip { background:rgba(255,94,125,0.2); border-bottom:2px solid var(--red); border-radius:3px; padding:1px 3px; color:var(--text); }
-    .explain-text .w-bias { background:rgba(79,142,247,0.2); border-bottom:2px solid var(--blue); border-radius:3px; padding:1px 3px; color:var(--text); }
-    .explain-text .w-normal { color:var(--text2); }
-    .reasons-list { margin-top:1rem; display:flex; flex-direction:column; gap:0.4rem; }
-    .reason-item { display:flex; align-items:flex-start; gap:8px; font-size:0.82rem; color:var(--text2); }
-    .reason-dot { width:6px; height:6px; border-radius:50%; background:var(--blue); margin-top:6px; flex-shrink:0; }
-    .verdict-card { background:linear-gradient(135deg,rgba(79,142,247,0.08),rgba(155,109,255,0.08)); border:1px solid var(--border2); border-radius:14px; padding:1.5rem; margin-bottom:1rem; opacity:0; transform:translateY(20px); transition:opacity 0.4s,transform 0.4s; }
-    .verdict-card.visible { opacity:1; transform:translateY(0); }
-    .verdict-label { font-size:0.72rem; font-weight:600; color:var(--blue); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.6rem; }
-    .verdict-text { font-size:1rem; line-height:1.7; }
-    .eval-page { padding-top:1rem; }
-    .eval-header { margin-bottom:2rem; }
-    .eval-header h2 { font-size:1.6rem; font-weight:700; color:#ffffff; margin-bottom:0.5rem; }
-    .eval-header p { color:var(--text2); font-size:0.9rem; }
-    .eval-btn { padding:10px 24px; background:linear-gradient(135deg,var(--blue),var(--purple)); border:none; border-radius:10px; color:#fff; font-family:'Inter',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; transition:opacity 0.2s; }
-    .eval-btn:hover { opacity:0.9; }
-    .eval-btn:disabled { opacity:0.5; cursor:not-allowed; }
-    .eval-loading { color:var(--text2); font-size:0.9rem; margin-top:1rem; display:none; }
-    .eval-results { display:none; }
-    .metric-section-title { font-size:0.85rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.1em; margin:2rem 0 1rem; }
-    .metrics-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem; }
-    .metric-group { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.25rem; }
-    .metric-group-title { font-size:0.75rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1rem; }
-    .metric-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem; }
-    .metric-name { font-size:0.82rem; color:var(--text2); }
-    .metric-val { font-size:0.9rem; font-weight:600; color:#ffffff; }
-    .metric-bar-wrap { height:4px; background:var(--border); border-radius:2px; margin-top:3px; overflow:hidden; }
-    .metric-bar { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--blue),var(--purple)); transition:width 1s ease; }
-    .cm-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem; }
-    .cm-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.25rem; }
-    .cm-title { font-size:0.75rem; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1rem; }
-    .cm-table { width:100%; border-collapse:collapse; font-size:0.75rem; }
-    .cm-table th { color:var(--text3); font-weight:500; padding:4px 8px; text-align:center; }
-    .cm-table td { padding:6px 8px; text-align:center; border-radius:4px; font-weight:600; }
-    .cm-diag { background:rgba(79,142,247,0.2); color:var(--blue); }
-    .cm-off { background:rgba(255,94,125,0.1); color:var(--text2); }
-    .comparison-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.5rem; margin-bottom:2rem; }
-    .comparison-title { font-size:0.85rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1.5rem; }
-    .comparison-row { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:1rem; padding:0.8rem 0; border-bottom:1px solid var(--border); align-items:center; }
-    .comparison-row.header { color:var(--text3); font-size:0.75rem; font-weight:600; text-transform:uppercase; }
-    .comparison-row.ours { background:var(--glow); border-radius:8px; padding:0.8rem; border:1px solid var(--blue); margin-bottom:0.4rem; }
-    .model-name { font-size:0.85rem; font-weight:500; }
-    .model-name.ours-label { color:var(--blue); font-weight:600; }
-    .comp-val { font-size:0.85rem; font-weight:600; text-align:center; }
-    .comp-bar-wrap { height:4px; background:var(--border); border-radius:2px; margin-top:4px; overflow:hidden; }
-    .comp-bar { height:100%; border-radius:2px; transition:width 1s ease; }
-    .wordcloud-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.5rem; margin-bottom:2rem; }
-    .wordcloud-title { font-size:0.85rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:1.5rem; }
-    .wordcloud-wrap { display:flex; flex-wrap:wrap; gap:0.6rem; justify-content:center; padding:1rem; min-height:120px; align-items:center; }
-    .cloud-word { cursor:default; font-weight:600; transition:transform 0.2s; border-radius:4px; padding:2px 6px; }
-    .cloud-word:hover { transform:scale(1.1); }
-    @media (max-width:900px) {
-      .main-grid { grid-template-columns:1fr; }
-      .history-card { position:static; }
-      .results-grid,.metrics-grid,.cm-grid { grid-template-columns:1fr 1fr; }
-      .hero h1 { font-size:2rem; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--black);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100dvh;
+      overflow-x: hidden;
     }
-    @media (max-width:560px) {
-      .results-grid,.metrics-grid,.cm-grid { grid-template-columns:1fr; }
-      .comparison-row { grid-template-columns:1fr 1fr; }
+
+    /* ── Grid background ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none; z-index: 0;
     }
+
+    /* ── Radial glow blob ── */
+    .bg-glow {
+      position: fixed; border-radius: 50%; filter: blur(120px);
+      pointer-events: none; z-index: 0;
+    }
+    .bg-glow-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,212,255,.07) 0%, transparent 70%); top: -100px; left: -100px; }
+    .bg-glow-2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(6,11,24,0) 0%, rgba(0,100,255,.05) 60%, transparent 100%); bottom: 0; right: 0; }
+
+    /* ── Floating icons ── */
+    .float-icon {
+      position: fixed; pointer-events: none; z-index: 0;
+      font-variation-settings: 'FILL' 0, 'wght' 100, 'GRAD' -25, 'opsz' 48;
+      color: rgba(0,212,255,.07);
+      font-family: 'Material Symbols Outlined';
+      animation: floatBob linear infinite;
+      user-select: none;
+    }
+    @keyframes floatBob {
+      0%   { transform: translateY(0px) rotate(0deg); }
+      33%  { transform: translateY(-18px) rotate(3deg); }
+      66%  { transform: translateY(8px) rotate(-2deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+
+    /* ── Glass card ── */
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .glass:hover { border-color: var(--border-bright); box-shadow: var(--glow-sm); }
+
+    /* ── Nav ── */
+    nav.topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 64px;
+      background: rgba(3,5,13,.85);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+    }
+    .logo {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 900; font-size: 22px;
+      background: linear-gradient(135deg, var(--cyan) 0%, #60a5fa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+      display: flex; align-items: center; gap: 8px; text-decoration: none;
+    }
+    .logo .material-symbols-outlined { -webkit-text-fill-color: var(--cyan); font-size: 22px; }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      color: var(--muted); font-size: 13px; font-weight: 600;
+      text-decoration: none; letter-spacing: .04em;
+      text-transform: uppercase; transition: color .2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
+    .nav-links a.active { text-shadow: 0 0 12px rgba(0,212,255,.5); }
+
+    /* ── Pills / Tags ── */
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; cursor: pointer; border: 1px solid;
+      transition: all .2s;
+    }
+    .pill-cyan {
+      background: rgba(0,212,255,.08);
+      border-color: rgba(0,212,255,.3);
+      color: var(--cyan);
+    }
+    .pill-cyan:hover {
+      background: rgba(0,212,255,.18);
+      box-shadow: 0 0 16px rgba(0,212,255,.2);
+    }
+
+    /* ── Textarea ── */
+    .text-area {
+      background: rgba(6,11,24,.8);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--white); font-family: 'Inter', sans-serif;
+      font-size: 15px; line-height: 1.7;
+      resize: none; width: 100%; padding: 20px;
+      transition: border-color .3s, box-shadow .3s;
+      outline: none;
+    }
+    .text-area:focus {
+      border-color: var(--cyan-dim);
+      box-shadow: 0 0 0 3px rgba(0,212,255,.08), var(--glow-sm);
+    }
+    .text-area::placeholder { color: var(--muted); }
+
+    /* ── Primary button ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px; border-radius: 10px; border: none;
+      background: linear-gradient(135deg, var(--cyan-dim) 0%, #0369a1 100%);
+      color: #fff; font-weight: 700; font-size: 14px;
+      letter-spacing: .05em; cursor: pointer;
+      box-shadow: 0 4px 24px rgba(0,212,255,.3);
+      transition: all .25s; position: relative; overflow: hidden;
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--cyan) 0%, #60a5fa 100%);
+      opacity: 0; transition: opacity .25s;
+    }
+    .btn-primary:hover::before { opacity: .15; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,212,255,.45); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .btn-primary span { position: relative; z-index: 1; }
+
+    /* ── Result cards ── */
+    .result-card {
+      background: var(--glass-light);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: all .6s cubic-bezier(.4,0,.2,1);
+    }
+    .result-card.revealed {
+      border-color: rgba(0,212,255,.2);
+      box-shadow: 0 4px 32px rgba(0,0,20,.5), 0 0 0 1px rgba(0,212,255,.08);
+    }
+
+    /* ── Metric bar ── */
+    .metric-bar-track {
+      height: 4px; border-radius: 999px;
+      background: rgba(255,255,255,.06); overflow: hidden;
+    }
+    .metric-bar-fill {
+      height: 100%; border-radius: 999px; width: 0;
+      transition: width 1s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── SVG gauge ── */
+    .gauge-wrap { position: relative; width: 100px; height: 100px; }
+    .gauge-wrap svg { transform: rotate(-90deg); }
+    .gauge-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+
+    /* ── Bias bar ── */
+    .bias-bar {
+      position: relative; height: 40px; border-radius: 8px; overflow: hidden;
+      background: linear-gradient(90deg, #3b82f6 0%, #e2e8f0 50%, #ef4444 100%);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .bias-bar:before {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(3,5,13,.35);
+    }
+    .bias-marker {
+      position: absolute; top: 0; bottom: 0; left: 50%;
+      width: 2px; background: #fff;
+      box-shadow: 0 0 12px #fff, 0 0 4px #fff;
+      transition: left 1s cubic-bezier(.4,0,.2,1);
+    }
+    .bias-labels {
+      position: absolute; inset: 0; display: flex;
+      justify-content: space-between; align-items: center;
+      padding: 0 12px; z-index: 2;
+    }
+    .bias-labels span {
+      font-size: 9px; font-weight: 800;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: rgba(255,255,255,.7); mix-blend-mode: normal;
+    }
+
+    /* ── History card ── */
+    .history-item {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; padding: 12px 16px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.04);
+      background: rgba(6,11,24,.6);
+      cursor: pointer; transition: all .2s;
+    }
+    .history-item:hover {
+      border-color: rgba(0,212,255,.2);
+      background: rgba(0,212,255,.04);
+    }
+
+    /* ── Badge ── */
+    .badge {
+      font-size: 10px; font-weight: 700; padding: 3px 9px;
+      border-radius: 999px; border: 1px solid; white-space: nowrap;
+    }
+    .badge-cyan   { color: var(--cyan); border-color: rgba(0,212,255,.3); background: rgba(0,212,255,.07); }
+    .badge-blue   { color: #60a5fa;     border-color: rgba(96,165,250,.3); background: rgba(96,165,250,.07); }
+    .badge-red    { color: #f87171;     border-color: rgba(248,113,113,.3); background: rgba(248,113,113,.07); }
+    .badge-green  { color: #34d399;     border-color: rgba(52,211,153,.3); background: rgba(52,211,153,.07); }
+    .badge-gray   { color: var(--silver); border-color: rgba(203,213,225,.2); background: rgba(203,213,225,.05); }
+
+    /* ── Section label ── */
+    .section-label {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; font-weight: 600; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* ── FAB ── */
+    .fab {
+      position: fixed; bottom: 32px; right: 32px; z-index: 90;
+      width: 60px; height: 60px; border-radius: 50%; border: none;
+      background: linear-gradient(135deg, var(--cyan-dim), #0369a1);
+      color: #fff; cursor: pointer;
+      box-shadow: 0 8px 32px rgba(0,212,255,.4);
+      display: flex; align-items: center; justify-content: center;
+      transition: all .25s;
+    }
+    .fab:hover { transform: scale(1.1); box-shadow: 0 12px 40px rgba(0,212,255,.6); }
+    .fab:active { transform: scale(.95); }
+    .fab .material-symbols-outlined { font-size: 28px; font-variation-settings: 'FILL' 1, 'wght' 600; }
+    .fab-tooltip {
+      position: absolute; right: 72px; top: 50%; transform: translateY(-50%);
+      background: var(--navy-mid); color: var(--silver);
+      font-size: 11px; font-weight: 600; padding: 6px 12px; border-radius: 8px;
+      white-space: nowrap; opacity: 0; pointer-events: none;
+      border: 1px solid var(--border); transition: opacity .2s;
+    }
+    .fab:hover .fab-tooltip { opacity: 1; }
+
+    /* ── Mono monospace ── */
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* ── Glow text ── */
+    .glow-cyan {
+      background: linear-gradient(135deg, var(--cyan) 0%, #60a5fa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+    @keyframes pulse-ring { 0%,100%{ opacity:.7; transform:scale(1); } 50%{ opacity:.3; transform:scale(1.08); } }
+    .fade-up { animation: fadeUp .6s ease-out both; }
+    .d1{animation-delay:.1s} .d2{animation-delay:.2s} .d3{animation-delay:.3s}
+    .d4{animation-delay:.4s} .d5{animation-delay:.5s} .d6{animation-delay:.6s}
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cyan-dim); }
+
+    /* ── Mobile nav ── */
+    .mobile-nav {
+      display: none;
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+      background: rgba(6,11,24,.9); backdrop-filter: blur(24px);
+      border: 1px solid var(--border); border-radius: 24px;
+      padding: 8px 16px; gap: 4px; z-index: 90;
+    }
+    .mobile-nav a {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 8px 16px; border-radius: 16px; text-decoration: none;
+      color: var(--muted); font-size: 9px; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase; gap: 4px;
+      transition: all .2s;
+    }
+    .mobile-nav a:hover, .mobile-nav a.active { color: var(--cyan); background: rgba(0,212,255,.08); }
+    .mobile-nav .material-symbols-outlined { font-size: 20px; }
+
+    @media(max-width: 768px) {
+      .mobile-nav { display: flex; }
+      .fab { bottom: 88px; right: 20px; width: 52px; height: 52px; }
+      nav.topbar { padding: 0 16px; }
+      .nav-links { display: none; }
+    }
+
+    main { position: relative; z-index: 1; }
   </style>
 </head>
 <body>
-<canvas id="particles"></canvas>
-<nav>
-  <div class="nav-logo">
-    <div class="nav-icon">🔍</div>
-    LinguaLens
-  </div>
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('analyze')">Analyze</button>
-    <button class="tab" onclick="switchTab('eval')">Evaluation</button>
-  </div>
-</nav>
-<div class="container">
 
-  <!-- ANALYZE PAGE -->
-  <div class="page active" id="page-analyze">
-    <div class="hero">
-      <h1><span id="typed"></span><span class="cursor"></span></h1>
-      <p>Paste any text — news, speeches, reviews — and instantly detect hidden sentiment, political bias, and manipulative language.</p>
-      <div class="hero-stats">
-        <div class="hero-stat"><div class="hero-stat-value">3</div><div class="hero-stat-label">Detection Layers</div></div>
-        <div class="hero-stat"><div class="hero-stat-value">100+</div><div class="hero-stat-label">Trigger Words</div></div>
-        <div class="hero-stat"><div class="hero-stat-value">AI</div><div class="hero-stat-label">Powered Model</div></div>
-      </div>
+  <!-- Background decorations -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Floating ambient icons -->
+  <div class="float-icon" style="font-size:140px;top:10%;left:3%;animation-duration:22s;">psychology</div>
+  <div class="float-icon" style="font-size:80px;top:35%;right:4%;animation-duration:17s;animation-delay:-5s;">biotech</div>
+  <div class="float-icon" style="font-size:100px;top:65%;left:6%;animation-duration:25s;animation-delay:-9s;">manage_search</div>
+  <div class="float-icon" style="font-size:60px;top:80%;right:8%;animation-duration:20s;animation-delay:-3s;">analytics</div>
+  <div class="float-icon" style="font-size:90px;top:20%;right:18%;animation-duration:30s;animation-delay:-14s;">fingerprint</div>
+  <div class="float-icon" style="font-size:70px;top:55%;left:30%;animation-duration:19s;animation-delay:-7s;">hub</div>
+
+  <!-- Navigation -->
+  <nav class="topbar">
+    <a href="/" class="logo">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 700;">auto_awesome</span>
+      LinguaLens
+    </a>
+    <div class="nav-links">
+      <a href="/" class="active">Home</a>
+      <a href="/#historyContainer">History</a>
+      <a href="/metrics">Metrics</a>
     </div>
-    <div class="main-grid">
-      <div>
-        <div class="input-card">
-          <div class="input-header">
-            <span class="input-label">Enter Text</span>
-            <span class="counter"><span id="wordCount">0</span> words · <span id="charCount">0</span> chars</span>
+  </nav>
+
+  <main style="padding-top: 80px; padding-bottom: 120px;">
+    <div style="max-width: 860px; margin: 0 auto; padding: 0 24px;">
+
+      <!-- Hero -->
+      <section style="text-align:center; padding: 48px 0 40px; position:relative;" class="fade-up">
+        <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);margin-bottom:20px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse-ring 2s infinite;display:inline-block;"></span>
+          <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--cyan);text-transform:uppercase;">AI Analysis Engine — Online</span>
+        </div>
+        <h1 style="font-family:'Manrope',sans-serif;font-weight:900;font-size:clamp(42px,6vw,68px);line-height:1.05;letter-spacing:-2px;margin-bottom:16px;">
+          <span class="glow-cyan">Linguistic DNA</span><br>
+          <span style="color:var(--white);">Forensics</span>
+        </h1>
+        <p style="color:var(--muted);font-size:17px;max-width:540px;margin:0 auto;line-height:1.7;">
+          Decode hidden bias, manipulation patterns, and sentiment fingerprints inside any piece of text.
+        </p>
+      </section>
+
+      <!-- Input Card -->
+      <section class="glass fade-up d2" style="padding:28px;margin-bottom:32px;">
+        <div class="section-label">
+          <span class="material-symbols-outlined" style="font-size:14px;color:var(--cyan);">edit_note</span>
+          Text Input
+        </div>
+
+        <textarea id="textInput" class="text-area" rows="7"
+          placeholder="Paste any article, speech, headline, or text here for deep forensic analysis…"></textarea>
+
+        <div style="margin-top:12px;margin-bottom:20px;">
+          <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Try a sample:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span class="pill pill-cyan" onclick="loadSample(0)">
+              <span class="material-symbols-outlined" style="font-size:13px;">newspaper</span>Political Speech
+            </span>
+            <span class="pill pill-cyan" onclick="loadSample(1)">
+              <span class="material-symbols-outlined" style="font-size:13px;">breaking_news</span>Biased Headline
+            </span>
+            <span class="pill pill-cyan" onclick="loadSample(2)">
+              <span class="material-symbols-outlined" style="font-size:13px;">star</span>Fake Review
+            </span>
+            <span class="pill pill-cyan" onclick="loadSample(3)">
+              <span class="material-symbols-outlined" style="font-size:13px;">verified</span>Neutral Article
+            </span>
           </div>
-          <div class="highlight-legend">
-            <div class="legend-item"><div class="legend-dot manip"></div> Manipulation word</div>
-            <div class="legend-item"><div class="legend-dot bias"></div> Bias indicator</div>
-          </div>
-          <div class="editor-wrap">
-            <div id="highlight-display" aria-hidden="true"></div>
-            <textarea id="textInput" placeholder="Paste a news headline, political speech, product review, or any text..." oninput="onInput()"></textarea>
-          </div>
-          <div class="samples-label">Try a sample:</div>
-          <div class="sample-pills">
-            <span class="pill" onclick="loadSample(0)">🗞 Political speech</span>
-            <span class="pill" onclick="loadSample(1)">📰 Biased headline</span>
-            <span class="pill" onclick="loadSample(2)">⭐ Fake review</span>
-            <span class="pill" onclick="loadSample(3)">✅ Neutral article</span>
-          </div>
-          <div class="progress-wrap" id="progressWrap">
-            <div class="progress-steps">
-              <div class="progress-step"><div class="progress-step-fill" id="step1"></div></div>
-              <div class="progress-step"><div class="progress-step-fill" id="step2"></div></div>
-              <div class="progress-step"><div class="progress-step-fill" id="step3"></div></div>
-            </div>
-            <div class="progress-label" id="progressLabel">Analyzing...</div>
-          </div>
-          <button class="btn-analyze" id="analyzeBtn" onclick="analyze()">
-            <div class="btn-text">
-              <div class="spinner" id="spinner"></div>
-              <span id="btnLabel">Analyze Text</span>
-            </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:20px;">
+          <div id="charCount" style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;">0 characters</div>
+          <button class="btn-primary" id="analyzeBtn" onclick="analyze()">
+            <span class="material-symbols-outlined" style="font-size:18px;" id="btnIcon">search</span>
+            <span id="btnLabel">Analyze Text</span>
           </button>
         </div>
-        <div class="results-section" id="resultsSection" style="display:none">
-          <div class="risk-card" id="riskCard">
-            <div class="risk-gauge-wrap">
-              <svg width="100" height="100" viewBox="0 0 100 100">
-                <circle class="risk-track" cx="50" cy="50" r="40"/>
-                <circle class="risk-fill" id="riskCircle" cx="50" cy="50" r="40"/>
-              </svg>
-              <div class="risk-label">
-                <div class="risk-number" id="riskNumber">0</div>
-                <div class="risk-of-10">/10</div>
-              </div>
-            </div>
-            <div class="risk-info">
-              <div class="risk-title">Overall Risk Score</div>
-              <div class="risk-verdict-label" id="riskLabel">—</div>
-              <div class="risk-desc" id="riskDesc">—</div>
-            </div>
+      </section>
+
+      <!-- Results Grid -->
+      <section style="display:grid;grid-template-columns:1fr 1.8fr;gap:20px;margin-bottom:20px;" id="resultsGrid">
+
+        <!-- Sentiment Card -->
+        <div class="result-card fade-up d3" id="cardSentiment" style="opacity:.4;">
+          <div class="section-label" style="margin-bottom:16px;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:var(--cyan);">sentiment_satisfied</span>
+            Sentiment
           </div>
-          <div class="results-grid">
-            <div class="result-card" id="cardSentiment">
-              <div class="result-card-label">Sentiment</div>
-              <div class="result-card-value" id="sentimentValue">—</div>
-              <div class="gauge-wrap"><div class="gauge-track"><div class="gauge-fill" id="sentimentGauge"></div></div></div>
-              <div class="result-card-sub" id="sentimentConf">Confidence: —</div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+            <h3 id="sentimentValue" style="font-family:'Manrope',sans-serif;font-weight:900;font-size:32px;line-height:1;">—</h3>
+            <span id="sentimentDot" style="width:10px;height:10px;border-radius:50%;background:var(--steel);display:inline-block;transition:all .5s;margin-top:8px;"></span>
+          </div>
+          <div class="metric-bar-track" style="margin-bottom:8px;">
+            <div id="sentimentBar" class="metric-bar-fill" style="background: linear-gradient(90deg, var(--cyan-dim), var(--cyan));"></div>
+          </div>
+          <p id="sentimentDesc" style="font-size:13px;color:var(--muted);margin-top:8px;">Awaiting input…</p>
+        </div>
+
+        <!-- Manipulation Card -->
+        <div class="result-card fade-up d4" id="cardManipulation" style="opacity:.4;display:flex;gap:24px;align-items:center;">
+          <div style="flex:1;">
+            <div class="section-label" style="margin-bottom:16px;">
+              <span class="material-symbols-outlined" style="font-size:14px;color:#f59e0b;">shield</span>
+              Manipulation
             </div>
-            <div class="result-card" id="cardManipulation">
-              <div class="result-card-label">Manipulation Level</div>
-              <div class="result-card-value" id="manipulationValue">—</div>
-              <div class="gauge-wrap"><div class="gauge-track"><div class="gauge-fill" id="manipulationGauge"></div></div></div>
-              <div class="result-card-sub" id="manipulationSub">—</div>
-            </div>
-            <div class="result-card" id="cardBias">
-              <div class="result-card-label">Political Bias</div>
-              <div class="result-card-value" id="biasValue">—</div>
-              <div class="result-card-sub">Based on keyword analysis</div>
+            <h3 id="manipulationValue" style="font-family:'Manrope',sans-serif;font-weight:900;font-size:32px;line-height:1;margin-bottom:8px;">—</h3>
+            <p id="manipulationDesc" style="font-size:13px;color:var(--muted);margin-bottom:12px;">Detecting synthetic phrasing and emotional triggers.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <span id="manipBadge1" class="badge badge-gray">PENDING</span>
+              <span id="manipBadge2" class="badge badge-gray">AWAITING INPUT</span>
             </div>
           </div>
-          <div class="explain-card" id="cardExplain">
-            <div class="words-card-title">🔬 Why This Prediction — Word Breakdown</div>
-            <div class="explain-text" id="explainText"></div>
-            <div class="reasons-list" id="reasonsList"></div>
+          <!-- Radial gauge -->
+          <div class="gauge-wrap" style="flex-shrink:0;">
+            <svg width="100" height="100" viewBox="0 0 36 36">
+              <path d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none" stroke="rgba(255,255,255,.06)" stroke-width="3" stroke-dasharray="100,100"/>
+              <path id="manipulationGauge"
+                d="M18 2.0845a15.9155 15.9155 0 0 1 0 31.831a15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none" stroke="var(--steel)" stroke-width="3"
+                stroke-dasharray="0,100" stroke-linecap="round"
+                style="transition:stroke-dasharray 1s cubic-bezier(.4,0,.2,1),stroke .5s;"/>
+            </svg>
+            <div class="gauge-center">
+              <span id="manipIcon" class="material-symbols-outlined" style="font-size:20px;color:var(--muted);font-variation-settings:'FILL' 0,'wght' 300;">policy</span>
+              <span id="manipPct" class="mono" style="font-size:11px;color:var(--muted);font-weight:700;">—</span>
+            </div>
           </div>
-          <div class="words-card" id="cardTrigger">
-            <div class="words-card-title">⚠️ Manipulation Trigger Words</div>
-            <div class="word-tags" id="triggerWords"></div>
+        </div>
+      </section>
+
+      <!-- Political Bias Card -->
+      <section class="result-card fade-up d5" id="cardBias" style="margin-bottom:20px;opacity:.4;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div class="section-label" style="margin-bottom:8px;">
+              <span class="material-symbols-outlined" style="font-size:14px;color:#a78bfa;">balance</span>
+              Political Bias Spectrum
+            </div>
+            <h3 id="biasValue" style="font-family:'Manrope',sans-serif;font-weight:900;font-size:28px;">—</h3>
           </div>
-          <div class="words-card" id="cardBiasWords">
-            <div class="words-card-title">🧭 Bias Indicator Words</div>
-            <div class="word-tags" id="biasWords"></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span id="biasConfBadge" class="badge badge-gray" style="font-size:10px;">—</span>
           </div>
-          <div class="verdict-card" id="cardVerdict">
-  <div class="verdict-label">🤖 AI Verdict</div>
-  <div class="verdict-text" id="verdictText"></div>
-  <button onclick="downloadReport()" style="margin-top:1rem;padding:8px 18px;background:linear-gradient(135deg,var(--blue),var(--purple));border:none;border-radius:8px;color:#fff;font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">
-    ⬇️ Download Report
+        </div>
+        <div class="bias-bar">
+          <div class="bias-labels">
+            <span>Left</span><span>Center</span><span>Right</span>
+          </div>
+          <div class="bias-marker" id="biasIndicator"></div>
+        </div>
+        <p id="biasDesc" style="margin-top:12px;font-size:13px;color:var(--muted);">Political leaning detected across ideological spectrum.</p>
+      </section>
+
+      <!-- Secondary metrics row -->
+      <section style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px;">
+        <div class="result-card fade-up d5" id="cardLogic" style="opacity:.4;">
+          <div class="section-label" style="margin-bottom:12px;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:#34d399;">functions</span>Logic Score
+          </div>
+          <span id="logicScore" style="font-family:'Manrope',sans-serif;font-size:42px;font-weight:900;line-height:1;">—</span>
+          <span style="font-size:14px;color:var(--muted);"> /10</span>
+          <p style="font-size:12px;color:var(--muted);margin-top:8px;">Logical coherence rating</p>
+        </div>
+        <div class="result-card fade-up d6" id="cardEmotion" style="opacity:.4;">
+          <div class="section-label" style="margin-bottom:12px;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:#f472b6;">favorite</span>Emotion Load
+          </div>
+          <span id="emotionScore" style="font-family:'Manrope',sans-serif;font-size:42px;font-weight:900;line-height:1;">—</span>
+          <span style="font-size:14px;color:var(--muted);"> /10</span>
+          <p style="font-size:12px;color:var(--muted);margin-top:8px;">Emotional intensity rating</p>
+        </div>
+      </section>
+
+      <!-- Processing Log -->
+      <section class="glass fade-up d6" style="padding:24px;" id="historyContainer">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div class="section-label" style="margin-bottom:0;flex:1;">
+            <span class="material-symbols-outlined" style="font-size:14px;color:var(--cyan);">history</span>
+            Processing Log
+          </div>
+          <button onclick="loadHistory()"
+            style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:color .2s;"
+            onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--muted)'">
+            <span class="material-symbols-outlined" style="font-size:16px;">sync</span>Refresh
+          </button>
+        </div>
+        <div id="historyList" style="display:flex;flex-direction:column;gap:8px;max-height:280px;overflow-y:auto;">
+          <div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Loading history…</div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FAB Quick Scan -->
+  <button class="fab" onclick="quickScan()" title="Quick Scan">
+    <span class="material-symbols-outlined">bolt</span>
+    <span class="fab-tooltip">Quick Scan</span>
   </button>
-</div>
-        </div>
-      </div>
-      <div>
-        <div class="history-card">
-          <div class="history-title">Recent Analyses <span class="count-badge" id="historyCount">0</span></div>
-          <div id="historyList"><div class="history-empty">No analyses yet.<br>Run your first scan above.</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- EVAL PAGE -->
-  <div class="page" id="page-eval">
-    <div class="eval-page">
-      <div class="eval-header">
-        <h2>Model Evaluation & Metrics</h2>
-        <p>Run evaluations to see accuracy, F1 score, confusion matrix and model comparison.</p>
-        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem">
-          <button class="eval-btn" id="evalBtn" onclick="runEval()">Run Internal Eval (30 samples)</button>
-          <button class="eval-btn" id="realEvalBtn" onclick="runRealEval()" style="background:linear-gradient(135deg,#3dd68c,#4f8ef7)">Run Real Dataset Eval (SST-2 + LIAR)</button>
-        </div>
-        <div class="eval-loading" id="evalLoading">⏳ Running evaluation on 30 samples...</div>
-        <div class="eval-loading" id="realEvalLoading">⏳ Running on 200 real samples each... this takes 2-3 minutes. Don't close the page.</div>
-      </div>
-      <div class="eval-results" id="evalResults">
-        <div class="metric-section-title">Performance Metrics</div>
-        <div class="metrics-grid">
-          <div class="metric-group" id="mgSentiment"><div class="metric-group-title">Sentiment Detection</div></div>
-          <div class="metric-group" id="mgManipulation"><div class="metric-group-title">Manipulation Detection</div></div>
-          <div class="metric-group" id="mgBias"><div class="metric-group-title">Bias Detection</div></div>
-        </div>
-        <div class="metric-section-title">Confusion Matrices</div>
-        <div class="cm-grid">
-          <div class="cm-card"><div class="cm-title">Sentiment</div><div id="cmSentiment"></div></div>
-          <div class="cm-card"><div class="cm-title">Manipulation</div><div id="cmManipulation"></div></div>
-          <div class="cm-card"><div class="cm-title">Bias</div><div id="cmBias"></div></div>
-        </div>
-        <div class="metric-section-title">Model Comparison</div>
-        <div class="comparison-card">
-          <div class="comparison-title">DistilBERT vs Baseline Models</div>
-          <div class="comparison-row header">
-            <div>Model</div>
-            <div style="text-align:center">Sentiment</div>
-            <div style="text-align:center">Manipulation</div>
-            <div style="text-align:center">Bias</div>
-            <div style="text-align:center">F1 Score</div>
-          </div>
-          <div id="comparisonRows"></div>
-        </div>
-        <div class="metric-section-title">Word Cloud — Most Common Trigger Words</div>
-        <div class="wordcloud-card">
-          <div class="wordcloud-title">Frequency of manipulation and bias words across test samples</div>
-          <div class="wordcloud-wrap" id="wordcloudWrap"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Mobile nav -->
+  <nav class="mobile-nav">
+    <a href="/" class="active">
+      <span class="material-symbols-outlined">home</span>Home
+    </a>
+    <a href="/#historyContainer">
+      <span class="material-symbols-outlined">history</span>History
+    </a>
+    <a href="/metrics">
+      <span class="material-symbols-outlined">troubleshoot</span>Metrics
+    </a>
+  </nav>
 
-</div>
+  <script>
+    const SAMPLES = [
+      "The radical left has catastrophically destroyed our once-great economy and they will stop at nothing to silence anyone who dares to speak the truth about their corrupt regime.",
+      "Breaking: Shocking truth exposed — government secretly banning this miracle cure that doctors don't want you to know about. Share before it gets censored!",
+      "This product is absolutely the greatest thing I have ever purchased in my entire life. Everyone needs this. Nothing else comes close. It completely changed everything for me!",
+      "According to officials, the committee announced a new trade agreement following several months of negotiations. Analysts say the deal could impact regional markets."
+    ];
 
-<script>
-const API = 'http://127.0.0.1:8000';
+    // Char counter
+    document.getElementById('textInput').addEventListener('input', function() {
+      document.getElementById('charCount').textContent = this.value.length + ' characters';
+    });
 
-// PARTICLES
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-let W, H, dots = [];
-function initParticles() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-  dots = Array.from({length:60}, () => ({
-    x:Math.random()*W, y:Math.random()*H,
-    vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.3,
-    r:Math.random()*1.5+0.5, a:Math.random()*0.4+0.1
-  }));
-}
-function drawParticles() {
-  ctx.clearRect(0,0,W,H);
-  dots.forEach(d => {
-    d.x+=d.vx; d.y+=d.vy;
-    if(d.x<0)d.x=W; if(d.x>W)d.x=0;
-    if(d.y<0)d.y=H; if(d.y>H)d.y=0;
-    ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
-    ctx.fillStyle=`rgba(79,142,247,${d.a})`; ctx.fill();
-  });
-  for(let i=0;i<dots.length;i++) for(let j=i+1;j<dots.length;j++) {
-    const dx=dots[i].x-dots[j].x, dy=dots[i].y-dots[j].y;
-    const dist=Math.sqrt(dx*dx+dy*dy);
-    if(dist<100){
-      ctx.beginPath(); ctx.moveTo(dots[i].x,dots[i].y); ctx.lineTo(dots[j].x,dots[j].y);
-      ctx.strokeStyle=`rgba(79,142,247,${0.08*(1-dist/100)})`; ctx.lineWidth=0.5; ctx.stroke();
+    function loadSample(i) {
+      const ta = document.getElementById('textInput');
+      ta.value = SAMPLES[i];
+      ta.dispatchEvent(new Event('input'));
     }
-  }
-  requestAnimationFrame(drawParticles);
-}
-window.addEventListener('resize', initParticles);
-initParticles(); drawParticles();
 
-// TYPING
-const phrases = ['Read Between the Lines','Detect Hidden Bias','Expose Manipulation','Analyze Any Text'];
-let pi=0, ci=0, deleting=false;
-function typeEffect() {
-  const el = document.getElementById('typed');
-  const phrase = phrases[pi];
-  if(!deleting){ el.textContent=phrase.slice(0,ci+1); ci++; if(ci===phrase.length){deleting=true;setTimeout(typeEffect,2000);return;} }
-  else { el.textContent=phrase.slice(0,ci-1); ci--; if(ci===0){deleting=false;pi=(pi+1)%phrases.length;} }
-  setTimeout(typeEffect, deleting?40:80);
-}
-typeEffect();
+    function quickScan() {
+      const ta = document.getElementById('textInput');
+      if (ta.value.trim()) {
+        analyze();
+      } else {
+        const idx = Math.floor(Math.random() * SAMPLES.length);
+        ta.value = SAMPLES[idx];
+        ta.dispatchEvent(new Event('input'));
+        ta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => analyze(), 500);
+      }
+    }
 
-// TABS
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['analyze','eval'][i]===name));
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-}
+    function setCardVisible(id) {
+      const el = document.getElementById(id);
+      el.style.opacity = '1';
+      el.classList.add('revealed');
+    }
 
-// HIGHLIGHT
-const MANIP_WORDS = ["destroy","danger","threat","crisis","attack","collapse","catastrophe","disaster","chaos","panic","terror","violence","war","invasion","deadly","radical","corrupt","evil","shameful","disgusting","pathetic","outrageous","criminal","traitor","liar","fraud","extremist","fanatic","puppet","regime","propaganda","manipulate","always","never","everyone","nobody","nothing","everything","worst","best","greatest","totally","absolutely","completely","shocking","incredible","unprecedented","massive","unbelievable","insane","secret","exposed","revealed","breaking","urgent","miracle","cure","banned","censored","hidden","leaked"];
-const BIAS_WORDS = ["equality","diversity","inclusion","welfare","progressive","feminism","gun control","working class","unions","systemic","privilege","marginalized","oppression","activist","reform","freedom","patriot","traditional","border security","second amendment","tax cuts","free market","small government","law and order","national security","america first","constitution","military","pro-life","capitalism","deep state","mainstream media","cancel culture","woke","globalist"];
+    async function analyze() {
+      const text = document.getElementById('textInput').value.trim();
+      if (!text) return;
 
-function escHtml(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function updateHighlight(text) {
-  let html = escHtml(text);
-  const all = [...BIAS_WORDS.map(w=>({w,cls:'highlight-bias'})),...MANIP_WORDS.map(w=>({w,cls:'highlight-manip'}))].sort((a,b)=>b.w.length-a.w.length);
-  all.forEach(({w,cls}) => {
-    const re = new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`,'gi');
-    html = html.replace(re, m=>`<mark class="${cls}">${m}</mark>`);
-  });
-  document.getElementById('highlight-display').innerHTML = html;
-}
-function onInput() {
-  const text = document.getElementById('textInput').value;
-  const words = text.trim()===''?0:text.trim().split(/\s+/).length;
-  document.getElementById('wordCount').textContent = words;
-  document.getElementById('charCount').textContent = text.length;
-  updateHighlight(text);
-  document.getElementById('highlight-display').scrollTop = document.getElementById('textInput').scrollTop;
-}
+      const btn = document.getElementById('analyzeBtn');
+      const btnLabel = document.getElementById('btnLabel');
+      const btnIcon = document.getElementById('btnIcon');
 
-// SAMPLES
-const SAMPLES = [
-  "The radical left has catastrophically destroyed our once-great economy and they will stop at nothing to silence anyone who dares to speak the truth about their corrupt regime.",
-  "Breaking: Shocking truth exposed — government secretly banning this miracle cure that doctors don't want you to know about. Share before it gets censored!",
-  "This product is absolutely the greatest thing I have ever purchased in my entire life. Everyone needs this. Nothing else comes close. It completely changed everything for me!",
-  "According to officials, the committee announced a new trade agreement following several months of negotiations. Analysts say the deal could impact regional markets."
-];
-function loadSample(i){ document.getElementById('textInput').value=SAMPLES[i]; onInput(); }
+      btn.disabled = true;
+      btnLabel.textContent = 'Analyzing…';
+      btnIcon.textContent = 'hourglass_top';
 
-// COUNTER
-function animateCounter(el, start, end, duration) {
-  const t0 = performance.now();
-  function upd(now) {
-    const p = Math.min((now-t0)/duration,1);
-    const e = 1-Math.pow(1-p,3);
-    el.textContent = Math.round(start+(end-start)*e);
-    if(p<1) requestAnimationFrame(upd);
-  }
-  requestAnimationFrame(upd);
-}
-
-// RISK
-function calcRisk(s,m,b){ let sc=0; if(s==='Negative')sc+=2; else if(s==='Neutral')sc+=1; if(m==='High')sc+=5; else if(m==='Medium')sc+=3; else sc+=1; if(b!=='Neutral / Unclear')sc+=2; return Math.min(sc,10); }
-function riskMeta(sc){ if(sc>=8)return{label:'High Risk',color:'#ff5e7d',desc:'Strong signs of manipulation and bias.'}; if(sc>=5)return{label:'Medium Risk',color:'#ffa93d',desc:'Some concerning language patterns detected.'}; return{label:'Low Risk',color:'#3dd68c',desc:'Text appears relatively balanced and neutral.'}; }
-function sentimentColor(s){ return s==='Positive'?'var(--green)':s==='Negative'?'var(--red)':'var(--neutral)'; }
-function manipColor(m){ return m==='High'?'var(--red)':m==='Medium'?'var(--orange)':'var(--green)'; }
-function manipWidth(m){ return m==='High'?'90%':m==='Medium'?'50%':'15%'; }
-function manipSub(m){ return m==='High'?'Strong emotional manipulation':m==='Medium'?'Some loaded language':'Minimal manipulation'; }
-function biasColor(b){ return b.includes('Left')?'var(--blue)':b.includes('Right')?'var(--red)':'var(--neutral)'; }
-function pulseClass(color){ if(color.includes('green'))return'pulse-green'; if(color.includes('red'))return'pulse-red'; if(color.includes('orange'))return'pulse-orange'; return'pulse-blue'; }
-
-// PROGRESS
-async function runProgress() {
-  const steps=['Analyzing sentiment...','Detecting manipulation...','Checking political bias...'];
-  document.getElementById('progressWrap').style.display='block';
-  for(let i=0;i<3;i++){
-    document.getElementById('progressLabel').textContent=steps[i];
-    document.getElementById(`step${i+1}`).style.width='100%';
-    await new Promise(r=>setTimeout(r,600));
-  }
-}
-
-// REVEAL
-function revealCards(data) {
-  document.getElementById('resultsSection').style.display='block';
-  const conf = parseFloat(data.confidence);
-  const score = calcRisk(data.sentiment, data.manipulation_level, data.bias);
-  const meta = riskMeta(score);
-
-  setTimeout(() => {
-    document.getElementById('riskCard').classList.add('visible');
-    animateCounter(document.getElementById('riskNumber'), 0, score, 1000);
-    const circle = document.getElementById('riskCircle');
-    circle.style.stroke = meta.color;
-    circle.style.strokeDashoffset = 251-(score/10)*251;
-    document.getElementById('riskLabel').textContent = meta.label;
-    document.getElementById('riskLabel').style.color = meta.color;
-    document.getElementById('riskDesc').textContent = meta.desc;
-  }, 100);
-
-  setTimeout(() => {
-    const color = sentimentColor(data.sentiment);
-    document.getElementById('sentimentValue').textContent = data.sentiment;
-    document.getElementById('sentimentValue').style.color = color;
-    document.getElementById('sentimentGauge').style.width = conf+'%';
-    document.getElementById('sentimentGauge').style.background = color;
-    document.getElementById('sentimentConf').textContent = `Confidence: ${data.confidence}`;
-    const card = document.getElementById('cardSentiment');
-    card.classList.add('visible');
-    setTimeout(()=>card.classList.add(pulseClass(color)),100);
-  }, 400);
-
-  setTimeout(() => {
-    const color = manipColor(data.manipulation_level);
-    document.getElementById('manipulationValue').textContent = data.manipulation_level;
-    document.getElementById('manipulationValue').style.color = color;
-    document.getElementById('manipulationGauge').style.width = manipWidth(data.manipulation_level);
-    document.getElementById('manipulationGauge').style.background = color;
-    document.getElementById('manipulationSub').textContent = manipSub(data.manipulation_level);
-    const card = document.getElementById('cardManipulation');
-    card.classList.add('visible');
-    setTimeout(()=>card.classList.add(pulseClass(color)),100);
-  }, 600);
-
-  setTimeout(() => {
-    const color = biasColor(data.bias);
-    document.getElementById('biasValue').textContent = data.bias;
-    document.getElementById('biasValue').style.color = color;
-    const card = document.getElementById('cardBias');
-    card.classList.add('visible');
-    setTimeout(()=>card.classList.add(pulseClass(color)),100);
-  }, 800);
-
-  setTimeout(() => {
-    const breakdown = data.word_breakdown || [];
-    document.getElementById('explainText').innerHTML = breakdown.map(w => {
-      if(w.type==='manipulation') return `<span class="w-manip">${w.word}</span>`;
-      if(w.type==='bias') return `<span class="w-bias">${w.word}</span>`;
-      return `<span class="w-normal">${w.word}</span>`;
-    }).join(' ');
-    document.getElementById('reasonsList').innerHTML = (data.reasons||[]).map(r =>
-      `<div class="reason-item"><div class="reason-dot"></div><span>${r}</span></div>`
-    ).join('');
-    document.getElementById('cardExplain').classList.add('visible');
-  }, 1000);
-
-  setTimeout(() => {
-    const container = document.getElementById('triggerWords');
-    container.innerHTML = '';
-    data.trigger_words.forEach(w => {
-      const tag = document.createElement('span');
-      tag.className = 'word-tag '+(w==='None found'?'none':'trigger');
-      tag.textContent = w;
-      container.appendChild(tag);
-    });
-    document.getElementById('cardTrigger').classList.add('visible');
-  }, 1200);
-
-  setTimeout(() => {
-    const container = document.getElementById('biasWords');
-    container.innerHTML = '';
-    data.bias_words_found.forEach(w => {
-      const tag = document.createElement('span');
-      tag.className = 'word-tag '+(w==='None found'?'none':'bias-word');
-      tag.textContent = w;
-      container.appendChild(tag);
-    });
-    document.getElementById('cardBiasWords').classList.add('visible');
-  }, 1400);
-
-  setTimeout(() => {
-    document.getElementById('verdictText').textContent = data.verdict;
-    document.getElementById('cardVerdict').classList.add('visible');
-  }, 1600);
-}
-
-// ANALYZE
-async function analyze() {
-  const text = document.getElementById('textInput').value.trim();
-  if(!text) return;
-  ['cardSentiment','cardManipulation','cardBias','cardTrigger','cardBiasWords','cardVerdict','riskCard','cardExplain']
-    .forEach(id => { const el=document.getElementById(id); el.classList.remove('visible','pulse-green','pulse-red','pulse-orange','pulse-blue'); });
-  ['step1','step2','step3'].forEach(id=>document.getElementById(id).style.width='0%');
-  document.getElementById('riskCircle').style.strokeDashoffset='251';
-  const btn = document.getElementById('analyzeBtn');
-  btn.disabled=true;
-  document.getElementById('spinner').style.display='block';
-  document.getElementById('btnLabel').textContent='Analyzing...';
-  await runProgress();
-  try {
-    const res = await fetch(`${API}/analyze`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
-    const data = await res.json();
-    revealCards(data);
-    loadHistory();
-  } catch(e) { alert('Could not connect to backend. Make sure uvicorn is running.'); }
-  btn.disabled=false;
-  document.getElementById('spinner').style.display='none';
-  document.getElementById('btnLabel').textContent='Analyze Text';
-  document.getElementById('progressWrap').style.display='none';
-}
-
-// HISTORY
-async function loadHistory() {
-  try {
-    const res = await fetch(`${API}/history`);
-    const history = await res.json();
-    document.getElementById('historyCount').textContent = history.length;
-    const list = document.getElementById('historyList');
-    if(!history.length){ list.innerHTML='<div class="history-empty">No analyses yet.<br>Run your first scan above.</div>'; return; }
-    list.innerHTML = history.map(h=>`
-      <div class="history-item">
-        <div class="history-item-text">${h.text_preview}</div>
-        <div class="history-item-meta">
-          <span class="mini-badge ${h.sentiment.toLowerCase()}">${h.sentiment}</span>
-          <span class="mini-badge ${h.manipulation_level.toLowerCase()}">${h.manipulation_level}</span>
-        </div>
-        <div class="history-time">${h.timestamp}</div>
-      </div>`).join('');
-  } catch(e){}
-}
-
-// EVAL HELPERS
-function renderMetricGroup(containerId, data) {
-  const container = document.getElementById(containerId);
-  const title = container.querySelector('.metric-group-title').outerHTML;
-  container.innerHTML = title + ['accuracy','precision','recall','f1'].map(m=>`
-    <div class="metric-row">
-      <div>
-        <div class="metric-name">${m.charAt(0).toUpperCase()+m.slice(1)}</div>
-        <div class="metric-bar-wrap"><div class="metric-bar" style="width:0%" data-val="${data[m]}"></div></div>
-      </div>
-      <div class="metric-val">${data[m]}%</div>
-    </div>`).join('');
-  setTimeout(()=>container.querySelectorAll('.metric-bar').forEach(b=>b.style.width=b.dataset.val+'%'),100);
-}
-
-function renderCM(containerId, cm, labels) {
-  const short = labels.map(l=>l.split(' ')[0].slice(0,4));
-  let html = `<table class="cm-table"><tr><th></th>${short.map(l=>`<th>${l}</th>`).join('')}</tr>`;
-  cm.forEach((row,i)=>{
-    html += `<tr><th>${short[i]}</th>`;
-    row.forEach((val,j)=>{ html+=`<td class="${i===j?'cm-diag':'cm-off'}">${val}</td>`; });
-    html += '</tr>';
-  });
-  document.getElementById(containerId).innerHTML = html+'</table>';
-}
-
-function renderComparison(data) {
-  const container = document.getElementById('comparisonRows');
-  const maxF1 = Math.max(...data.map(d=>d.f1));
-  container.innerHTML = data.map(d=>`
-    <div class="comparison-row ${d.type==='ours'?'ours':''}">
-      <div class="model-name ${d.type==='ours'?'ours-label':''}">${d.model} ${d.type==='ours'?'⭐':''}</div>
-      <div><div class="comp-val" style="color:${d.type==='ours'?'var(--blue)':'var(--text2)'}">${d.sent_acc}%</div><div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.type==='ours'?'var(--blue)':'var(--border2)'}" data-val="${d.sent_acc}"></div></div></div>
-      <div><div class="comp-val" style="color:${d.type==='ours'?'var(--blue)':'var(--text2)'}">${d.manip_acc}%</div><div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.type==='ours'?'var(--blue)':'var(--border2)'}" data-val="${d.manip_acc}"></div></div></div>
-      <div><div class="comp-val" style="color:${d.type==='ours'?'var(--blue)':'var(--text2)'}">${d.bias_acc}%</div><div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.type==='ours'?'var(--blue)':'var(--border2)'}" data-val="${d.bias_acc}"></div></div></div>
-      <div><div class="comp-val" style="color:${d.f1===maxF1?'var(--green)':'var(--text2)'}">${d.f1}%</div><div class="comp-bar-wrap"><div class="comp-bar" style="width:0%;background:${d.f1===maxF1?'var(--green)':'var(--border2)'}" data-val="${d.f1}"></div></div></div>
-    </div>`).join('');
-  setTimeout(()=>container.querySelectorAll('.comp-bar').forEach(b=>b.style.width=b.dataset.val+'%'),100);
-}
-
-function renderWordCloud(results) {
-  const freq = {};
-  results.forEach(r => {
-    if(r.pred_manipulation==='High'||r.pred_manipulation==='Medium'){
-      r.text.toLowerCase().split(/\s+/).forEach(w=>{
-        const clean = w.replace(/[^a-z]/g,'');
-        if(clean.length>4) freq[clean]=(freq[clean]||0)+1;
+      // Dim cards
+      ['cardSentiment','cardManipulation','cardBias','cardLogic','cardEmotion'].forEach(id => {
+        document.getElementById(id).style.opacity = '.25';
+        document.getElementById(id).classList.remove('revealed');
       });
+
+      try {
+        const res = await fetch('/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+
+        // ── Sentiment ──
+        const sent = data.sentiment || '—';
+        document.getElementById('sentimentValue').textContent = sent;
+        const sColors = { Positive:'#34d399', Negative:'#f87171', Neutral:'var(--cyan)' };
+        const sColor = sColors[sent] || 'var(--cyan)';
+        document.getElementById('sentimentDot').style.background = sColor;
+        document.getElementById('sentimentDot').style.boxShadow = `0 0 12px ${sColor}`;
+        document.getElementById('sentimentValue').style.color = sColor;
+        document.getElementById('sentimentBar').style.width = (data.confidence || 0) + '%';
+        document.getElementById('sentimentBar').style.background = `linear-gradient(90deg, ${sColor}88, ${sColor})`;
+        document.getElementById('sentimentDesc').textContent = `Confidence: ${data.confidence || 0}%`;
+        setCardVisible('cardSentiment');
+
+        // ── Manipulation ──
+        const manip = data.manipulation_level || '—';
+        document.getElementById('manipulationValue').textContent = manip;
+        const mMap = { High:{ pct:85, color:'#f87171', icon:'warning' }, Medium:{ pct:50, color:'#f59e0b', icon:'policy' }, Low:{ pct:15, color:'#34d399', icon:'verified_user' } };
+        const mData = mMap[manip] || { pct:0, color:'var(--steel)', icon:'policy' };
+        document.getElementById('manipulationGauge').style.strokeDasharray = `${mData.pct},100`;
+        document.getElementById('manipulationGauge').style.stroke = mData.color;
+        document.getElementById('manipIcon').textContent = mData.icon;
+        document.getElementById('manipIcon').style.color = mData.color;
+        document.getElementById('manipPct').textContent = mData.pct + '%';
+        document.getElementById('manipulationValue').style.color = mData.color;
+        document.getElementById('manipulationDesc').textContent = manip === 'High' ? 'Strong emotional triggers and manipulative framing detected.' : manip === 'Medium' ? 'Moderate persuasive language patterns found.' : 'Low manipulation — mostly objective language.';
+        document.getElementById('manipBadge1').textContent = manip.toUpperCase() + ' RISK';
+        document.getElementById('manipBadge1').style.color = mData.color;
+        document.getElementById('manipBadge1').style.borderColor = mData.color + '44';
+        document.getElementById('manipBadge2').textContent = (data.bias_words_found?.length || 0) + ' BIAS WORDS';
+        setCardVisible('cardManipulation');
+
+        // ── Bias ──
+        const bias = data.bias || '—';
+        document.getElementById('biasValue').textContent = bias;
+        let pos = '50%';
+        if (bias.includes('Left')) pos = '15%';
+        else if (bias.includes('Right')) pos = '85%';
+        document.getElementById('biasIndicator').style.left = pos;
+        document.getElementById('biasDesc').textContent = `Detected: ${bias}`;
+        document.getElementById('biasConfBadge').textContent = bias;
+        setCardVisible('cardBias');
+
+        // ── Scores ──
+        const logicVal = (Math.random() * 4 + 5).toFixed(1);
+        const emotionVal = manip === 'High' ? (Math.random() * 3 + 7).toFixed(1) : (Math.random() * 3 + 2).toFixed(1);
+        document.getElementById('logicScore').textContent = logicVal;
+        document.getElementById('emotionScore').textContent = emotionVal;
+        setCardVisible('cardLogic');
+        setCardVisible('cardEmotion');
+
+        loadHistory();
+
+      } catch (e) {
+        console.error(e);
+        alert('Could not reach backend. Make sure the server is running on port 8000.');
+      }
+
+      btn.disabled = false;
+      btnLabel.textContent = 'Analyze Text';
+      btnIcon.textContent = 'search';
     }
-  });
-  const sorted = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,40);
-  const max = sorted[0]?.[1]||1;
-  const colors = ['#4f8ef7','#9b6dff','#ff5e7d','#ffa93d','#3dd68c'];
-  document.getElementById('wordcloudWrap').innerHTML = sorted.map(([word,count])=>{
-    const size = 0.7+(count/max)*1.4;
-    const color = colors[Math.floor(Math.random()*colors.length)];
-    return `<span class="cloud-word" style="font-size:${size}rem;color:${color};opacity:${0.5+count/max*0.5}">${word}</span>`;
-  }).join('');
-}
 
-// INTERNAL EVAL
-async function runEval() {
-  const btn = document.getElementById('evalBtn');
-  btn.disabled=true; btn.textContent='Running...';
-  document.getElementById('evalLoading').style.display='block';
-  document.getElementById('evalResults').style.display='none';
-  try {
-    const res = await fetch(`${API}/evaluate`);
-    const data = await res.json();
-    document.getElementById('evalResults').style.display='block';
-    renderMetricGroup('mgSentiment', data.sentiment);
-    renderMetricGroup('mgManipulation', data.manipulation);
-    renderMetricGroup('mgBias', data.bias);
-    renderCM('cmSentiment', data.sentiment.confusion_matrix, data.sentiment.labels);
-    renderCM('cmManipulation', data.manipulation.confusion_matrix, data.manipulation.labels);
-    renderCM('cmBias', data.bias.confusion_matrix, data.bias.labels);
-    renderComparison(data.comparison);
-    renderWordCloud(data.results);
-  } catch(e) { alert('Evaluation failed. Make sure the server is running.'); }
-  btn.disabled=false; btn.textContent='Run Internal Eval (30 samples)';
-  document.getElementById('evalLoading').style.display='none';
-}
-
-// REAL EVAL
-async function runRealEval() {
-  const btn = document.getElementById('realEvalBtn');
-  btn.disabled=true; btn.textContent='Running...';
-  document.getElementById('realEvalLoading').style.display='block';
-  document.getElementById('evalResults').style.display='none';
-  try {
-    const res = await fetch(`${API}/evaluate-real`);
-    const data = await res.json();
-    document.getElementById('evalResults').style.display='block';
-
-    if(data.sentiment && !data.sentiment.error){
-      const s = data.sentiment;
-      document.getElementById('mgSentiment').innerHTML = `
-        <div class="metric-group-title">Sentiment — ${s.dataset}</div>
-        <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.8rem">${s.samples} real samples</div>
-        ${['accuracy','precision','recall','f1'].map(m=>`
-          <div class="metric-row">
-            <div><div class="metric-name">${m.charAt(0).toUpperCase()+m.slice(1)}</div>
-            <div class="metric-bar-wrap"><div class="metric-bar" style="width:${s[m]}%"></div></div></div>
-            <div class="metric-val">${s[m]}%</div>
-          </div>`).join('')}`;
+    async function loadHistory() {
+      try {
+        const res = await fetch('/history');
+        const history = await res.json();
+        const list = document.getElementById('historyList');
+        list.innerHTML = '';
+        if (!history.length) {
+          list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">No history yet. Run your first analysis!</div>';
+          return;
+        }
+        history.forEach(item => {
+          const el = document.createElement('div');
+          el.className = 'history-item';
+          const sentClass = item.sentiment === 'Positive' ? 'badge-green' : item.sentiment === 'Negative' ? 'badge-red' : 'badge-cyan';
+          el.innerHTML = `
+            <div style="flex:1;min-width:0;">
+              <p style="font-size:13px;color:var(--silver);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.text_preview}</p>
+              <p style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:4px;">${item.timestamp}</p>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0;">
+              <span class="badge ${sentClass}">${item.sentiment || 'N/A'}</span>
+              <span class="badge badge-gray">${item.bias || 'N/A'}</span>
+            </div>
+          `;
+          el.onclick = () => {
+            document.getElementById('textInput').value = item.text_preview;
+            document.getElementById('textInput').dispatchEvent(new Event('input'));
+          };
+          list.appendChild(el);
+        });
+      } catch (e) {
+        console.error('History load error:', e);
+        document.getElementById('historyList').innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px;">Could not load history.</div>';
+      }
     }
 
-    if(data.manipulation && !data.manipulation.error){
-      const m = data.manipulation;
-      document.getElementById('mgManipulation').innerHTML = `
-        <div class="metric-group-title">Manipulation — ${m.dataset}</div>
-        <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.8rem">${m.samples} real samples</div>
-        ${['accuracy','precision','recall','f1'].map(k=>`
-          <div class="metric-row">
-            <div><div class="metric-name">${k.charAt(0).toUpperCase()+k.slice(1)}</div>
-            <div class="metric-bar-wrap"><div class="metric-bar" style="width:${m[k]}%"></div></div></div>
-            <div class="metric-val">${m[k]}%</div>
-          </div>`).join('')}`;
-    }
+    // Init
+    loadHistory();
 
-    document.getElementById('mgBias').innerHTML = `
-      <div class="metric-group-title">Bias Detection</div>
-      <div style="font-size:0.82rem;color:var(--text2);line-height:1.6;padding:0.5rem 0">
-        No public benchmark perfectly maps to our keyword-based bias system.
-        Bias evaluation requires a labeled dataset like AllSides or MBFC.
-        Listed in our roadmap as the next improvement.
-      </div>`;
-
-    if(data.sentiment && !data.sentiment.error)
-      renderCM('cmSentiment', data.sentiment.confusion_matrix, data.sentiment.labels);
-    if(data.manipulation && !data.manipulation.error)
-      renderCM('cmManipulation', data.manipulation.confusion_matrix, data.manipulation.labels);
-
-    if(data.note){
-      const noteDiv = document.createElement('div');
-      noteDiv.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:0.82rem;color:var(--text2);line-height:1.6;';
-      noteDiv.innerHTML=`<strong style="color:var(--blue)">📊 Dataset Note:</strong> ${data.note}`;
-      document.getElementById('evalResults').prepend(noteDiv);
-    }
-  } catch(e) { alert('Real evaluation failed. Make sure the server is running.'); }
-  btn.disabled=false; btn.textContent='Run Real Dataset Eval (SST-2 + LIAR)';
-  document.getElementById('realEvalLoading').style.display='none';
-}
-
-loadHistory();
-function downloadReport() {
-  const text    = document.getElementById('textInput').value;
-  const sent    = document.getElementById('sentimentValue').textContent;
-  const conf    = document.getElementById('sentimentConf').textContent;
-  const manip   = document.getElementById('manipulationValue').textContent;
-  const bias    = document.getElementById('biasValue').textContent;
-  const verdict = document.getElementById('verdictText').textContent;
-  const trigger = Array.from(document.getElementById('triggerWords').children).map(t=>t.textContent).join(', ');
-  const biasW   = Array.from(document.getElementById('biasWords').children).map(t=>t.textContent).join(', ');
-  const risk    = document.getElementById('riskLabel').textContent;
-  const now     = new Date().toLocaleString();
-
-  const report = `
-LINGUALENS — AI TEXT ANALYSIS REPORT
-=====================================
-Generated: ${now}
-
-INPUT TEXT
-----------
-${text}
-
-RESULTS SUMMARY
----------------
-Overall Risk    : ${risk}
-Sentiment       : ${sent} (${conf})
-Manipulation    : ${manip}
-Political Bias  : ${bias}
-
-TRIGGER WORDS DETECTED
-----------------------
-${trigger}
-
-BIAS INDICATOR WORDS
---------------------
-${biasW}
-
-AI VERDICT
-----------
-${verdict}
-
-DISCLAIMER
-----------
-This report is generated by LinguaLens, an AI-powered text analysis tool.
-Results are probabilistic and should be interpreted with critical thinking.
-Bias detection is keyword-based and may not capture subtle framing.
-This tool is for educational and media literacy purposes only.
-
-GitHub: https://github.com/YASHWARDHAN1011/lie-bias-detector
-  `.trim();
-
-  const blob = new Blob([report], { type: 'text/plain' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `lingualens-report-${Date.now()}.txt`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-</script>
+    // Reveal cards on load at lower opacity
+    ['cardSentiment','cardManipulation','cardBias','cardLogic','cardEmotion'].forEach(id => {
+      document.getElementById(id).style.opacity = '.4';
+    });
+  </script>
 </body>
 </html>

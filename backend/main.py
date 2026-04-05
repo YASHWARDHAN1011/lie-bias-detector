@@ -73,6 +73,10 @@ class TextInput(BaseModel):
 def serve_frontend():
     return FileResponse("frontend/index.html")
 
+@app.get("/metrics")
+def serve_metrics():
+    return FileResponse("frontend/metrics.html")
+
 @app.get("/health")
 def health():
     return {"status": "ok", "version": "1.0.0"}
